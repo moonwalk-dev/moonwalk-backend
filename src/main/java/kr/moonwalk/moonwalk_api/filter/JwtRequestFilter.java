@@ -5,7 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import kr.moonwalk.moonwalk_api.service.CustomUserDetailsService;
+import kr.moonwalk.moonwalk_api.service.auth.CustomUserDetailsService;
 import kr.moonwalk.moonwalk_api.util.JwtUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

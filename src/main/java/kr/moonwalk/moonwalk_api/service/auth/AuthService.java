@@ -1,10 +1,10 @@
-package kr.moonwalk.moonwalk_api.service;
+package kr.moonwalk.moonwalk_api.service.auth;
 
 import kr.moonwalk.moonwalk_api.domain.User;
-import kr.moonwalk.moonwalk_api.dto.JwtResponse;
-import kr.moonwalk.moonwalk_api.dto.UserLoginDto;
-import kr.moonwalk.moonwalk_api.dto.UserRegistrationDto;
-import kr.moonwalk.moonwalk_api.dto.UserResponseDto;
+import kr.moonwalk.moonwalk_api.dto.auth.JwtResponse;
+import kr.moonwalk.moonwalk_api.dto.auth.UserLoginDto;
+import kr.moonwalk.moonwalk_api.dto.auth.UserRegistrationDto;
+import kr.moonwalk.moonwalk_api.dto.auth.UserResponseDto;
 import kr.moonwalk.moonwalk_api.exception.InvalidRefreshTokenException;
 import kr.moonwalk.moonwalk_api.repository.UserRepository;
 import kr.moonwalk.moonwalk_api.util.JwtUtil;

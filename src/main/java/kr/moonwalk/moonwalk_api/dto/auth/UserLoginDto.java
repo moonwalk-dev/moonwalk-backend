@@ -1,4 +1,4 @@
-package kr.moonwalk.moonwalk_api.dto;
+package kr.moonwalk.moonwalk_api.dto.auth;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package kr.moonwalk.moonwalk_api.service;
+package kr.moonwalk.moonwalk_api.service.auth;
 
 import java.util.Collections;
 import kr.moonwalk.moonwalk_api.domain.User;

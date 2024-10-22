@@ -1,4 +1,4 @@
-package kr.moonwalk.moonwalk_api.dto;
+package kr.moonwalk.moonwalk_api.dto.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
