@@ -1,0 +1,70 @@
+package kr.moonwalk.moonwalk_api.service;
+
+import kr.moonwalk.moonwalk_api.domain.User;
+import kr.moonwalk.moonwalk_api.dto.JwtResponse;
+import kr.moonwalk.moonwalk_api.dto.UserLoginDto;
+import kr.moonwalk.moonwalk_api.dto.UserRegistrationDto;
+import kr.moonwalk.moonwalk_api.dto.UserResponseDto;
+import kr.moonwalk.moonwalk_api.exception.InvalidRefreshTokenException;
+import kr.moonwalk.moonwalk_api.repository.UserRepository;
+import kr.moonwalk.moonwalk_api.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService userDetailsService;
+
+
+    public UserResponseDto registerUser(UserRegistrationDto registrationDto) {
+
+        if (userRepository.existsByUsername(registrationDto.getUsername())) {
+            throw new IllegalStateException("이미 존재하는 사용자명입니다.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(registrationDto.getPassword());
+        User user = new User(registrationDto.getUsername(), encodedPassword,
+            registrationDto.getRealname(), registrationDto.getPhoneNumber());
+        User savedUser = userRepository.save(user);
+
+        return new UserResponseDto(savedUser.getId());
+    }
+
+    public JwtResponse loginUser(UserLoginDto userLoginDto) {
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(userLoginDto.getUsername(),
+                userLoginDto.getPassword())
+        );
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(
+            userLoginDto.getUsername());
+
+        final String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername());
+        final String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
+
+
+        return new JwtResponse(accessToken, refreshToken);
+    }
+
+    public JwtResponse refreshAccessToken(String refreshToken) {
+        if (!jwtUtil.validateRefreshToken(refreshToken)) {
+            throw new InvalidRefreshTokenException("Refresh token is invalid or expired");
+        }
+
+        String username = jwtUtil.extractUsername(refreshToken);
+        String newAccessToken = jwtUtil.generateAccessToken(username);
+
+        return new JwtResponse(newAccessToken, refreshToken);
+    }
+
+}
