@@ -5,7 +5,7 @@ import kr.moonwalk.moonwalk_api.dto.auth.JwtResponse;
 import kr.moonwalk.moonwalk_api.dto.auth.UserLoginDto;
 import kr.moonwalk.moonwalk_api.dto.auth.UserRegistrationDto;
 import kr.moonwalk.moonwalk_api.dto.auth.UserResponseDto;
-import kr.moonwalk.moonwalk_api.exception.InvalidRefreshTokenException;
+import kr.moonwalk.moonwalk_api.exception.auth.InvalidRefreshTokenException;
 import kr.moonwalk.moonwalk_api.repository.UserRepository;
 import kr.moonwalk.moonwalk_api.util.JwtUtil;
 import lombok.RequiredArgsConstructor;

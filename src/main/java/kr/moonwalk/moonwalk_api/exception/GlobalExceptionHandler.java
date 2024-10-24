@@ -1,5 +1,7 @@
 package kr.moonwalk.moonwalk_api.exception;
 
+import kr.moonwalk.moonwalk_api.exception.auth.InvalidRefreshTokenException;
+import kr.moonwalk.moonwalk_api.exception.category.CategoryNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,13 +13,15 @@ import org.springframework.web.context.request.WebRequest;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex,
+        WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "USER_ALREADY_EXISTS");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex,
+        WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse("잘못된 사용자명 또는 비밀번호입니다.", "BAD_CREDENTIALS");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
@@ -29,8 +33,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidRefreshTokenException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidRefreshTokenException(InvalidRefreshTokenException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleInvalidRefreshTokenException(
+        InvalidRefreshTokenException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "INVALID_REFRESH_TOKEN");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(
+        CategoryNotFoundException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "CATEGORY_NOT_FOUND");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 }
