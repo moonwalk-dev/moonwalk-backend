@@ -5,12 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CategorySpaceDto {
-
-    private Long id;
+public class CategorySaveDto {
 
     private String name;
 
-    private String coverImage;
+    private Long parentId;
 
 }

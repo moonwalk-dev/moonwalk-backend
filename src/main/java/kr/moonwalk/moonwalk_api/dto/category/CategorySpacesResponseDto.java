@@ -9,5 +9,7 @@ import lombok.Getter;
 public class CategorySpacesResponseDto {
 
     private String categoryName;
+
     private List<CategorySpaceDto> spaces;
+
 }

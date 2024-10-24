@@ -5,12 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CategorySpaceDto {
+public class CategorySaveResponseDto {
 
     private Long id;
 
     private String name;
-
-    private String coverImage;
 
 }

@@ -1,12 +1,15 @@
 package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import kr.moonwalk.moonwalk_api.dto.category.CategorySaveDto;
+import kr.moonwalk.moonwalk_api.dto.category.CategorySaveResponseDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySpacesResponseDto;
 import kr.moonwalk.moonwalk_api.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,5 +30,11 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping
+    public ResponseEntity<CategorySaveResponseDto> create(CategorySaveDto categorySaveDto) {
 
+        CategorySaveResponseDto response = categoryService.create(categorySaveDto);
+
+        return ResponseEntity.ok(response);
+    }
 }

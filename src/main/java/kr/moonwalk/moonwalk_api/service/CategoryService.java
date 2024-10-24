@@ -3,6 +3,8 @@ package kr.moonwalk.moonwalk_api.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Category;
+import kr.moonwalk.moonwalk_api.dto.category.CategorySaveDto;
+import kr.moonwalk.moonwalk_api.dto.category.CategorySaveResponseDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySpaceDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySpacesResponseDto;
 import kr.moonwalk.moonwalk_api.exception.category.CategoryNotFoundException;
@@ -25,18 +27,27 @@ public class CategoryService {
 
         List<CategorySpaceDto> spaceDtos = null;
         if (category != null) {
-            spaceDtos = spaceRepository.findByCategory(category).stream()
-                .map(
-                    space -> new CategorySpaceDto(
-                        space.getId(),
-                        space.getName(),
-                        space.getCoverImage() != null ? space.getCoverImage().getImageUrl()
-                            : "default-image-url"
-                    )
-                ).collect(Collectors.toList());
+            spaceDtos = spaceRepository.findByCategory(category).stream().map(
+                space -> new CategorySpaceDto(space.getId(), space.getName(),
+                    space.getCoverImage() != null ? space.getCoverImage().getImageUrl()
+                        : "default-image-url")).collect(Collectors.toList());
 
         }
 
         return new CategorySpacesResponseDto(category.getName(), spaceDtos);
     }
+
+    public CategorySaveResponseDto create(CategorySaveDto categorySaveDto) {
+
+        Category parentCategory =
+            (categorySaveDto.getParentId() != null) ? categoryRepository.findById(
+                categorySaveDto.getParentId()).orElse(null) : null;
+
+        Category category = new Category(categorySaveDto.getName(), parentCategory);
+        Category savedCategory = categoryRepository.save(category);
+
+        return new CategorySaveResponseDto(savedCategory.getId(), savedCategory.getName());
+    }
+
+    public
 }
