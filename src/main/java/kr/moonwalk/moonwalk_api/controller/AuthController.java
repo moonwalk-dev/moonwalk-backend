@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import kr.moonwalk.moonwalk_api.dto.auth.JwtResponse;
 import kr.moonwalk.moonwalk_api.dto.auth.UserLoginDto;
 import kr.moonwalk.moonwalk_api.dto.auth.UserRegistrationDto;
@@ -30,7 +31,7 @@ public class AuthController {
         @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
         @ApiResponse(responseCode = "400", description = "이미 존재하는 사용자명")})
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody UserRegistrationDto userDto) {
+    public ResponseEntity<?> signup(@Valid @RequestBody UserRegistrationDto userDto) {
 
         UserResponseDto response = authService.registerUser(userDto);
         return ResponseEntity.ok(response);

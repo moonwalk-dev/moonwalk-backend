@@ -1,5 +1,6 @@
 package kr.moonwalk.moonwalk_api.service.auth;
 
+import jakarta.transaction.Transactional;
 import kr.moonwalk.moonwalk_api.domain.User;
 import kr.moonwalk.moonwalk_api.dto.auth.JwtResponse;
 import kr.moonwalk.moonwalk_api.dto.auth.UserLoginDto;
@@ -26,6 +27,7 @@ public class AuthService {
     private final CustomUserDetailsService userDetailsService;
 
 
+    @Transactional
     public UserResponseDto registerUser(UserRegistrationDto registrationDto) {
 
         if (userRepository.existsByUsername(registrationDto.getUsername())) {
