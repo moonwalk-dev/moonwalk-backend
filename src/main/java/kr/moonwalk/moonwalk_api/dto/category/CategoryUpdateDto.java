@@ -6,11 +6,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CategorySaveDto {
+public class CategoryUpdateDto {
 
     @NotBlank(message = "카테고리 명은 필수입니다.")
     private String name;
-
-    private Long parentId;
-
 }

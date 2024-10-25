@@ -1,5 +1,6 @@
 package kr.moonwalk.moonwalk_api.service;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Category;
@@ -9,6 +10,7 @@ import kr.moonwalk.moonwalk_api.dto.category.CategorySaveDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySaveResponseDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySpaceDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySpacesResponseDto;
+import kr.moonwalk.moonwalk_api.dto.category.CategoryUpdateDto;
 import kr.moonwalk.moonwalk_api.exception.category.CategoryNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.SpaceRepository;
@@ -39,13 +41,17 @@ public class CategoryService {
         return new CategorySpacesResponseDto(category.getName(), spaceDtos);
     }
 
-    public CategorySaveResponseDto create(CategorySaveDto categorySaveDto) {
+    @Transactional
+    public CategorySaveResponseDto create(CategorySaveDto saveDto) {
 
-        Category parentCategory =
-            (categorySaveDto.getParentId() != null) ? categoryRepository.findById(
-                categorySaveDto.getParentId()).orElse(null) : null;
+        Category parentCategory = null;
 
-        Category category = new Category(categorySaveDto.getName(), parentCategory);
+        if (saveDto.getParentId() != null) {
+            parentCategory = categoryRepository.findById(saveDto.getParentId())
+                .orElseThrow(() -> new CategoryNotFoundException("존재하지 않는 부모 카테고리입니다."));
+        }
+
+        Category category = new Category(saveDto.getName(), parentCategory);
         Category savedCategory = categoryRepository.save(category);
 
         return new CategorySaveResponseDto(savedCategory.getId(), savedCategory.getName());
@@ -64,5 +70,16 @@ public class CategoryService {
             .map(this::convertToDto)
             .collect(Collectors.toList());
         return new CategoryResponseDto(category.getId(), category.getName(), subCategories);
+    }
+
+    @Transactional
+    public CategorySaveResponseDto updateCategory(Long categoryId, CategoryUpdateDto updateDto) {
+
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
+
+        category.updateName(updateDto.getName());
+
+        return new CategorySaveResponseDto(category.getId(), category.getName());
     }
 }
