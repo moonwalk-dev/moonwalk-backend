@@ -1,6 +1,7 @@
 package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import kr.moonwalk.moonwalk_api.dto.category.CategoryListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySaveDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySaveResponseDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySpacesResponseDto;
@@ -34,6 +35,14 @@ public class CategoryController {
     public ResponseEntity<CategorySaveResponseDto> create(CategorySaveDto categorySaveDto) {
 
         CategorySaveResponseDto response = categoryService.create(categorySaveDto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<CategoryListResponseDto> getAllCategories() {
+
+        CategoryListResponseDto response = categoryService.getAllCategories();
 
         return ResponseEntity.ok(response);
     }

@@ -3,6 +3,8 @@ package kr.moonwalk.moonwalk_api.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Category;
+import kr.moonwalk.moonwalk_api.dto.category.CategoryListResponseDto;
+import kr.moonwalk.moonwalk_api.dto.category.CategoryResponseDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySaveDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySaveResponseDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySpaceDto;
@@ -49,5 +51,18 @@ public class CategoryService {
         return new CategorySaveResponseDto(savedCategory.getId(), savedCategory.getName());
     }
 
-    public
+    public CategoryListResponseDto getAllCategories() {
+        List<CategoryResponseDto> categories = categoryRepository.findAll().stream()
+            .filter(category -> category.getParentCategory() == null)
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
+        return new CategoryListResponseDto(categories);
+    }
+
+    private CategoryResponseDto convertToDto(Category category) {
+        List<CategoryResponseDto> subCategories = category.getSubCategories().stream()
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
+        return new CategoryResponseDto(category.getId(), category.getName(), subCategories);
+    }
 }
