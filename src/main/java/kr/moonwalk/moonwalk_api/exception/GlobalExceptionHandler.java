@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex,
         WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "USER_ALREADY_EXISTS");
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "ALREADY_EXISTS");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
@@ -32,6 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse("서버 오류가 발생했습니다.", "INTERNAL_SERVER_ERROR");
+        ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 

@@ -1,6 +1,5 @@
 package kr.moonwalk.moonwalk_api.service.auth;
 
-import jakarta.transaction.Transactional;
 import kr.moonwalk.moonwalk_api.domain.User;
 import kr.moonwalk.moonwalk_api.dto.auth.JwtResponse;
 import kr.moonwalk.moonwalk_api.dto.auth.UserLoginDto;
@@ -15,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

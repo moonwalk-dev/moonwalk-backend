@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,7 +37,7 @@ public class CategoryController {
 
     @Operation(summary = "카테고리 생성")
     @PostMapping
-    public ResponseEntity<CategorySaveResponseDto> create(@Valid CategorySaveDto categorySaveDto) {
+    public ResponseEntity<CategorySaveResponseDto> create(@Valid @RequestBody CategorySaveDto categorySaveDto) {
 
         CategorySaveResponseDto response = categoryService.create(categorySaveDto);
 
@@ -55,7 +56,7 @@ public class CategoryController {
     @Operation(summary = "카테고리 수정")
     @PutMapping("/{categoryId}")
     public ResponseEntity<CategorySaveResponseDto> update(@PathVariable Long categoryId,
-        @Valid CategoryUpdateDto updateDto) {
+        @Valid @RequestBody CategoryUpdateDto updateDto) {
 
         CategorySaveResponseDto response = categoryService.updateCategory(categoryId, updateDto);
 

@@ -1,6 +1,5 @@
 package kr.moonwalk.moonwalk_api.service;
 
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Category;
@@ -16,6 +15,7 @@ import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.SpaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +46,10 @@ public class CategoryService {
 
         Category parentCategory = null;
 
+        if (categoryRepository.existsByName(saveDto.getName())) {
+            throw new IllegalStateException("이미 존재하는 카테고리 명입니다.");
+        }
+
         if (saveDto.getParentId() != null) {
             parentCategory = categoryRepository.findById(saveDto.getParentId())
                 .orElseThrow(() -> new CategoryNotFoundException("존재하지 않는 부모 카테고리입니다."));
@@ -57,6 +61,7 @@ public class CategoryService {
         return new CategorySaveResponseDto(savedCategory.getId(), savedCategory.getName());
     }
 
+    @Transactional(readOnly = true)
     public CategoryListResponseDto getAllCategories() {
         List<CategoryResponseDto> categories = categoryRepository.findAll().stream()
             .filter(category -> category.getParentCategory() == null)
@@ -74,9 +79,13 @@ public class CategoryService {
 
     @Transactional
     public CategorySaveResponseDto updateCategory(Long categoryId, CategoryUpdateDto updateDto) {
-
+        
         Category category = categoryRepository.findById(categoryId)
             .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
+
+        if (categoryRepository.existsByName(updateDto.getName())) {
+            throw new IllegalStateException("이미 존재하는 카테고리 명입니다.");
+        }
 
         category.updateName(updateDto.getName());
 
