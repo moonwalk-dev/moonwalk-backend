@@ -27,10 +27,6 @@ public class User {
 
     private String password;
 
-    private String realname;
-
-    private String phoneNumber;
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -38,10 +34,9 @@ public class User {
         ROLE_USER, ROLE_ADMIN
     }
 
-    public User(String username, String password, String realname, String phoneNumber) {
+    public User(String username, String password, Role role) {
         this.username = username;
         this.password = password;
-        this.realname = realname;
-        this.phoneNumber = phoneNumber;
+        this.role = role;
     }
 }

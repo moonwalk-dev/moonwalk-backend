@@ -1,6 +1,7 @@
 package kr.moonwalk.moonwalk_api.service.auth;
 
 import kr.moonwalk.moonwalk_api.domain.User;
+import kr.moonwalk.moonwalk_api.domain.User.Role;
 import kr.moonwalk.moonwalk_api.dto.auth.JwtResponse;
 import kr.moonwalk.moonwalk_api.dto.auth.UserLoginDto;
 import kr.moonwalk.moonwalk_api.dto.auth.UserRegistrationDto;
@@ -35,8 +36,7 @@ public class AuthService {
         }
 
         String encodedPassword = passwordEncoder.encode(registrationDto.getPassword());
-        User user = new User(registrationDto.getUsername(), encodedPassword,
-            registrationDto.getRealname(), registrationDto.getPhoneNumber());
+        User user = new User(registrationDto.getUsername(), encodedPassword, Role.ROLE_USER);
         User savedUser = userRepository.save(user);
 
         return new UserResponseDto(savedUser.getId());
@@ -66,7 +66,13 @@ public class AuthService {
         String username = jwtUtil.extractUsername(refreshToken);
         String newAccessToken = jwtUtil.generateAccessToken(username);
 
-        return new JwtResponse(newAccessToken, refreshToken);
+        String newRefreshToken = refreshToken;
+        if (jwtUtil.isRefreshTokenExpiringSoon(refreshToken)) {
+            newRefreshToken = jwtUtil.generateRefreshToken(username);
+        }
+
+        return new JwtResponse(newAccessToken, newRefreshToken);
     }
+
 
 }

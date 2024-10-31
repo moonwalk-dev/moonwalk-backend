@@ -16,7 +16,7 @@ public class JwtUtil {
     private String secret;
 
     private final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 60;
-    private final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 7;
+    private final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 30;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
@@ -71,5 +71,17 @@ public class JwtUtil {
             .getBody()
             .getExpiration()
             .before(new Date());
+    }
+
+    public boolean isRefreshTokenExpiringSoon(String token) {
+        Date expirationDate = Jwts.parserBuilder()
+            .setSigningKey(getSigningKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .getExpiration();
+
+        long remainingTime = expirationDate.getTime() - System.currentTimeMillis();
+        return remainingTime < 24 * 60 * 60 * 1000 * 3; //3일
     }
 }

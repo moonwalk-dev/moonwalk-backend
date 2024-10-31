@@ -17,12 +17,4 @@ public class UserRegistrationDto {
     @Schema(description = "비밀번호")
     private String password;
 
-    @NotBlank(message = "이름은 필수입니다.")
-    @Schema(description = "실명")
-    private String realname;
-
-    @NotBlank(message = "연락처는 필수입니다.")
-    @Schema(description = "연락처")
-    private String phoneNumber;
-
 }
