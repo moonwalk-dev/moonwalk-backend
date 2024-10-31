@@ -24,8 +24,11 @@ public class SecurityConfig {
         "/api/auth/login",
         "/api/auth/signup",
         "/api/auth/reissue",
-//        "/api/categories/*/spaces",
+
         "/api/categories/**",
+        "/api/spaces/**",
+
+
         "/v3/api-docs/**",
         "/swagger-ui/**",
         "/swagger-ui.html"
