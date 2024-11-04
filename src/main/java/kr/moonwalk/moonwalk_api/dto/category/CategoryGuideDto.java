@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CategorySpaceDto {
+public class CategoryGuideDto {
 
     private Long id;
 

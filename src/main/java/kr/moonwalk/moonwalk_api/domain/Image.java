@@ -1,10 +1,14 @@
 package kr.moonwalk.moonwalk_api.domain;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,7 +25,17 @@ public class Image {
     @Column(name = "image_id")
     private Long id;
 
-    private String imageName;
-
     private String imageUrl;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "guide_id")
+    private Guide guide;
+
+    public Image(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void setGuide(Guide guide) {
+        this.guide = guide;
+    }
 }

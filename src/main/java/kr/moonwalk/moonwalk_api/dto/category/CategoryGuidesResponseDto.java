@@ -6,10 +6,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CategorySpacesResponseDto {
+public class CategoryGuidesResponseDto {
 
     private String categoryName;
 
-    private List<CategorySpaceDto> spaces;
+    private List<CategoryGuideDto> guides;
 
 }

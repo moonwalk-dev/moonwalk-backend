@@ -4,6 +4,7 @@ import static jakarta.persistence.FetchType.LAZY;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,20 +22,22 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "spaces")
+@Table(name = "guides")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Space {
+public class Guide {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "space_id")
+    @Column(name = "guide_id")
     private Long id;
 
     private String name;
 
     private String description;
 
-    private String keyword;
+    @ElementCollection
+    @Column(name = "keyword")
+    private List<String> keywords = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "category_id")
@@ -44,15 +47,22 @@ public class Space {
     @JoinColumn(name = "cover_image_id")
     private Image coverImage;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "space_id")
+    @OneToMany(mappedBy = "guide", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> detailImages = new ArrayList<>();
 
-
-    public Space(String name, String description, String keyword, Category category) {
+    public Guide(String name, String description, List<String> keywords, Category category) {
         this.name = name;
         this.description = description;
-        this.keyword = keyword;
+        this.keywords = keywords;
         this.category = category;
+    }
+
+    public void addDetailImages(List<Image> images) {
+        images.forEach(image -> image.setGuide(this));
+        this.detailImages.addAll(images);
+    }
+
+    public void setCoverImage(Image coverImage) {
+        this.coverImage = coverImage;
     }
 }
