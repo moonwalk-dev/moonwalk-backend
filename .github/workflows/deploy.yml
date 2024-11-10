@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '21'
-          distribution: 'temurin'  # Temurin 배포판 설정
+          distribution: 'temurin'
 
       # 2. 코드 체크아웃
       - name: Check out code
@@ -35,7 +35,7 @@ jobs:
       # 5. 빌드된 JAR 파일을 EC2로 전송
       - name: Copy JAR file to EC2
         run: |
-          scp -o StrictHostKeyChecking=no ./build/libs/your-app.jar ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app/app.jar
+          scp -o StrictHostKeyChecking=no ./build/libs/moonwalk-api-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app/app.jar
 
       # 6. EC2에서 Docker Compose 실행
       - name: Restart Docker Compose on EC2
