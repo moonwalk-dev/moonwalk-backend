@@ -37,7 +37,12 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no ./build/libs/moonwalk-api-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app/app.jar
 
-      # 6. EC2에서 Docker Compose 실행
+      # 6. `docker-compose.yml` 파일을 EC2로 전송
+      - name: Copy docker-compose.yml to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app/docker-compose.yml
+
+      # 7. EC2에서 Docker Compose 실행
       - name: Restart Docker Compose on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
