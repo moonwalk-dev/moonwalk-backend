@@ -42,6 +42,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
           cd /home/ubuntu/app
-          docker-compose down
-          docker-compose up -d --build
+          docker compose down
+          docker compose up -d --build
           EOF
