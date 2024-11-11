@@ -1,12 +1,16 @@
-all: up
+all: build copy up
+
+build:
+	@./gradlew clean build -x test
+
+copy:
+	@cp ./build/libs/moonwalk-api-0.0.1-SNAPSHOT.jar ./app.jar
+
 
 up:
-	docker compose -f docker-compose.yml -p test up --build -d
+	@docker compose -f docker-compose.yml -p test up --build -d
 
 down:
-	docker compose -f docker-compose.yml -p test down
+	@docker compose -f docker-compose.yml -p test down
 
-run:
-	./gradlew bootRun
-
-re: down up
+re: down build copy up
