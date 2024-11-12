@@ -9,12 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(name = "modules")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Module {
 
@@ -49,7 +51,17 @@ public class Module {
     @JoinColumn(name = "top_image_id")
     private Image topImage;
 
-
-
-
+    public Module(String name, String description, String size, int price, String material,
+        String serialNumber, int capacity, Category category, Image isoImage, Image topImage) {
+        this.name = name;
+        this.description = description;
+        this.size = size;
+        this.price = price;
+        this.material = material;
+        this.serialNumber = serialNumber;
+        this.capacity = capacity;
+        this.category = category;
+        this.isoImage = isoImage;
+        this.topImage = topImage;
+    }
 }
