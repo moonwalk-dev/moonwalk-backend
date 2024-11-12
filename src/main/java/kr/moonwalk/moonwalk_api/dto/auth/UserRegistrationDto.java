@@ -10,7 +10,7 @@ public class UserRegistrationDto {
 
     @NotBlank(message = "아이디는 필수입니다.")
     @Schema(description = "아이디")
-    private String username;
+    private String email;
 
     @NotBlank(message = "비밀번호는 필수입니다.")
     @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")

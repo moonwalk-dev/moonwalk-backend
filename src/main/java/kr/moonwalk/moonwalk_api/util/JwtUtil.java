@@ -15,25 +15,25 @@ public class JwtUtil {
     @Value("${spring.jwt.secret}")
     private String secret;
 
-    private final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 60;
-    private final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 30;
+    private static final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 60;
+    private static final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 30;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateAccessToken(String username) {
+    public String generateAccessToken(String email) {
         return Jwts.builder()
-            .setSubject(username)
+            .setSubject(email)
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
             .compact();
     }
 
-    public String generateRefreshToken(String username) {
+    public String generateRefreshToken(String email) {
         return Jwts.builder()
-            .setSubject(username)
+            .setSubject(email)
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -59,8 +59,8 @@ public class JwtUtil {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String email = extractUsername(token);
+        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {

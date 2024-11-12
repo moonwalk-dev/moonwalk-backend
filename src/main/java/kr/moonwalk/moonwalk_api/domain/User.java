@@ -23,7 +23,7 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    private String username;
+    private String email;
 
     private String password;
 
@@ -34,8 +34,8 @@ public class User {
         ROLE_USER, ROLE_ADMIN
     }
 
-    public User(String username, String password, Role role) {
-        this.username = username;
+    public User(String email, String password, Role role) {
+        this.email = email;
         this.password = password;
         this.role = role;
     }

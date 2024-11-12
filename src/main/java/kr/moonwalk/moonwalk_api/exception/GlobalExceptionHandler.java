@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex,
         WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse("잘못된 사용자명 또는 비밀번호입니다.", "BAD_CREDENTIALS");
+        ErrorResponse errorResponse = new ErrorResponse("잘못된 이메일 또는 비밀번호입니다.", "BAD_CREDENTIALS");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 

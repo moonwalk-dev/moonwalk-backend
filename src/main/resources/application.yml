@@ -32,8 +32,7 @@ server:
 springdoc:
   api-docs:
     path: /v3/api-docs
+    cache:
+      disabled: true
   swagger-ui:
     path: /swagger-ui.html
-    enable: true
-
-

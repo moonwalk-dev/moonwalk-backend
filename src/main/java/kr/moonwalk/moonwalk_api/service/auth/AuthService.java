@@ -31,12 +31,12 @@ public class AuthService {
     @Transactional
     public UserResponseDto registerUser(UserRegistrationDto registrationDto) {
 
-        if (userRepository.existsByUsername(registrationDto.getUsername())) {
-            throw new IllegalStateException("이미 존재하는 사용자명입니다.");
+        if (userRepository.existsByEmail(registrationDto.getEmail())) {
+            throw new IllegalStateException("이미 존재하는 이메일입니다.");
         }
 
         String encodedPassword = passwordEncoder.encode(registrationDto.getPassword());
-        User user = new User(registrationDto.getUsername(), encodedPassword, Role.ROLE_USER);
+        User user = new User(registrationDto.getEmail(), encodedPassword, Role.ROLE_USER);
         User savedUser = userRepository.save(user);
 
         return new UserResponseDto(savedUser.getId());
@@ -44,12 +44,12 @@ public class AuthService {
 
     public JwtResponse loginUser(UserLoginDto userLoginDto) {
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(userLoginDto.getUsername(),
+            new UsernamePasswordAuthenticationToken(userLoginDto.getEmail(),
                 userLoginDto.getPassword())
         );
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(
-            userLoginDto.getUsername());
+            userLoginDto.getEmail());
 
         final String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername());
         final String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
@@ -63,12 +63,12 @@ public class AuthService {
             throw new InvalidRefreshTokenException("Refresh token is invalid or expired");
         }
 
-        String username = jwtUtil.extractUsername(refreshToken);
-        String newAccessToken = jwtUtil.generateAccessToken(username);
+        String email = jwtUtil.extractUsername(refreshToken);
+        String newAccessToken = jwtUtil.generateAccessToken(email);
 
         String newRefreshToken = refreshToken;
         if (jwtUtil.isRefreshTokenExpiringSoon(refreshToken)) {
-            newRefreshToken = jwtUtil.generateRefreshToken(username);
+            newRefreshToken = jwtUtil.generateRefreshToken(email);
         }
 
         return new JwtResponse(newAccessToken, newRefreshToken);
