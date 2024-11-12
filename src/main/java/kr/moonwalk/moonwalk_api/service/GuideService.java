@@ -1,10 +1,11 @@
 package kr.moonwalk.moonwalk_api.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Category;
-import kr.moonwalk.moonwalk_api.domain.Image;
 import kr.moonwalk.moonwalk_api.domain.Guide;
+import kr.moonwalk.moonwalk_api.domain.Image;
 import kr.moonwalk.moonwalk_api.dto.category.CategoryGuideDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategoryGuidesResponseDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveDto;
@@ -55,24 +56,32 @@ public class GuideService {
         Guide guide = new Guide(saveDto.getName(), saveDto.getDescription(), saveDto.getKeywords(),
             category);
 
-        Image coverImage = imageService.uploadAndSaveImage(coverImageFile,
-            "guides/" + guide.getName() + "/cover");
+        String coverExtension = getFileExtension(coverImageFile.getOriginalFilename());
+        String coverImagePath = "guides/" + guide.getName() + "/cover." + coverExtension;
+        Image coverImage = imageService.uploadAndSaveImage(coverImageFile, coverImagePath);
         guide.setCoverImage(coverImage);
 
-        List<Image> detailImages = detailImageFiles.stream()
-            .map(file -> imageService.uploadAndSaveImage(file,
-                "guides/" + guide.getName() + "/details/" + file.getOriginalFilename()))
-            .collect(Collectors.toList());
+        List<Image> detailImages = new ArrayList<>();
+        for (int i = 0; i < detailImageFiles.size(); i++) {
+            MultipartFile file = detailImageFiles.get(i);
+            String detailExtension = getFileExtension(file.getOriginalFilename());
+            String detailImagePath =
+                "guides/" + guide.getName() + "/detail" + (i + 1) + "." + detailExtension;
+            Image detailImage = imageService.uploadAndSaveImage(file, detailImagePath);
+            detailImages.add(detailImage);
+        }
         guide.addDetailImages(detailImages);
 
         guideRepository.save(guide);
 
-        return new GuideSaveResponseDto(
-            guide.getId(),
-            guide.getName(),
-            guide.getDescription(),
-            guide.getKeywords()
-        );
+        return new GuideSaveResponseDto(guide.getId(), guide.getName(), guide.getDescription(),
+            guide.getKeywords());
     }
 
+    private String getFileExtension(String fileName) {
+        if (fileName != null && fileName.contains(".")) {
+            return fileName.substring(fileName.lastIndexOf(".") + 1);
+        }
+        return "";
+    }
 }
