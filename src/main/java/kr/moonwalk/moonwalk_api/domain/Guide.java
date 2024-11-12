@@ -13,7 +13,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -22,7 +21,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "guides")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Guide {
 
@@ -58,8 +56,10 @@ public class Guide {
     }
 
     public void addDetailImages(List<Image> images) {
-        images.forEach(image -> image.setGuide(this));
-        this.detailImages.addAll(images);
+        images.forEach(image -> {
+            image.setGuide(this);
+            this.detailImages.add(image);
+        });
     }
 
     public void setCoverImage(Image coverImage) {
