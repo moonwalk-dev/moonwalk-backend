@@ -10,7 +10,7 @@ import kr.moonwalk.moonwalk_api.dto.guide.CategoryGuideDto;
 import kr.moonwalk.moonwalk_api.dto.guide.CategoryGuidesResponseDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveResponseDto;
-import kr.moonwalk.moonwalk_api.exception.category.CategoryNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.GuideRepository;
 import lombok.RequiredArgsConstructor;

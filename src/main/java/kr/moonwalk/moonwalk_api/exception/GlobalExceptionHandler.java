@@ -3,7 +3,8 @@ package kr.moonwalk.moonwalk_api.exception;
 import java.util.HashMap;
 import java.util.Map;
 import kr.moonwalk.moonwalk_api.exception.auth.InvalidRefreshTokenException;
-import kr.moonwalk.moonwalk_api.exception.category.CategoryNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -47,6 +48,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(
         CategoryNotFoundException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "CATEGORY_NOT_FOUND");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ModuleNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleModuleNotFoundException(
+        ModuleNotFoundException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "MODULE_NOT_FOUND");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 

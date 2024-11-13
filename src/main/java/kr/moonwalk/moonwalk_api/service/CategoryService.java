@@ -8,7 +8,7 @@ import kr.moonwalk.moonwalk_api.dto.category.CategoryResponseDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySaveDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySaveResponseDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategoryUpdateDto;
-import kr.moonwalk.moonwalk_api.exception.category.CategoryNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
