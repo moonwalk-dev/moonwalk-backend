@@ -29,6 +29,7 @@ public class SecurityConfig {
         "/api/auth/reissue",
 
         "/api/categories/**",
+        "/api/modules/**",
 //        "/api/guides/**",
 
 

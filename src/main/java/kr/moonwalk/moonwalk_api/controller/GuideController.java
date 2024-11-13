@@ -3,7 +3,7 @@ package kr.moonwalk.moonwalk_api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
-import kr.moonwalk.moonwalk_api.dto.category.CategoryGuidesResponseDto;
+import kr.moonwalk.moonwalk_api.dto.guide.CategoryGuidesResponseDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveResponseDto;
 import kr.moonwalk.moonwalk_api.service.GuideService;

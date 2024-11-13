@@ -1,4 +1,4 @@
-package kr.moonwalk.moonwalk_api.dto.category;
+package kr.moonwalk.moonwalk_api.dto.guide;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

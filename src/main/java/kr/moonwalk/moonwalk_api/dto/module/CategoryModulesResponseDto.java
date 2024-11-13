@@ -1,15 +1,17 @@
-package kr.moonwalk.moonwalk_api.dto.category;
+package kr.moonwalk.moonwalk_api.dto.module;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+
 @Getter
 @AllArgsConstructor
-public class CategoryGuidesResponseDto {
+public class CategoryModulesResponseDto {
 
     private String categoryName;
 
-    private List<CategoryGuideDto> guides;
+    private List<CategoryModuleDto> modules;
+
 
 }
