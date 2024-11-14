@@ -14,17 +14,16 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "project_modules")
+@Table(name = "inventories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProjectModule {
+public class Inventory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int positionX;
-    private int positionY;
-    private int angle;
+    private int quantity;
+    private int usedQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "module_id")
@@ -34,14 +33,17 @@ public class ProjectModule {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    public static ProjectModule createFromInventory(Inventory inventory, Project project, int positionX, int positionY) {
-        ProjectModule projectModule = new ProjectModule();
-        projectModule.module = inventory.getModule();
-        projectModule.project = project;
-        projectModule.positionX = positionX;
-        projectModule.positionY = positionY;
-        projectModule.angle = 0;
+    public static Inventory createFromCart(Cart cart, Project project) {
+        Inventory inventory = new Inventory();
+        inventory.module = cart.getModule();
+        inventory.project = project;
+        inventory.quantity = cart.getQuantity();
+        inventory.usedQuantity = 0;
 
-        return projectModule;
+        return inventory;
+    }
+
+    public void updateUsedQuantity(int amountUsed) {
+        this.usedQuantity -= amountUsed;
     }
 }

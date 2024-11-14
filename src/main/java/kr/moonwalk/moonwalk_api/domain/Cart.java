@@ -6,9 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,11 +23,19 @@ public class Cart {
     @Column(name = "cart_id")
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private int quantity;
 
-    private int totalPrice;
+    @ManyToOne
+    @JoinColumn(name = "estimate_id")
+    private Estimate estimate;
 
-    private LocalDateTime createdAt;
+    @ManyToOne
+    @JoinColumn(name = "module_id")
+    private Module module;
+
+    public Cart(Estimate estimate, Module module, int quantity) {
+        this.estimate = estimate;
+        this.module = module;
+        this.quantity = quantity;
+    }
 }
