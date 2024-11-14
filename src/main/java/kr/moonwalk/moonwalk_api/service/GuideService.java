@@ -15,6 +15,7 @@ import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.GuideRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -26,6 +27,7 @@ public class GuideService {
     private final ImageService imageService;
 
 
+    @Transactional(readOnly = true)
     public CategoryGuidesResponseDto getGuidesByCategoryId(Long categoryId) {
 
         Category category = categoryRepository.findById(categoryId)
@@ -43,6 +45,7 @@ public class GuideService {
         return new CategoryGuidesResponseDto(category.getName(), guideDtos);
     }
 
+    @Transactional
     public GuideSaveResponseDto saveGuide(GuideSaveDto saveDto, MultipartFile coverImageFile,
         List<MultipartFile> detailImageFiles) {
 

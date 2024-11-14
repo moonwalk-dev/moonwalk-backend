@@ -13,6 +13,7 @@ import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class ModuleService {
     private final ModuleRepository moduleRepository;
     private final CategoryRepository categoryRepository;
 
+    @Transactional(readOnly = true)
     public CategoryModulesResponseDto getModulesByCategoryId(Long categoryId) {
 
         Category category = categoryRepository.findById(categoryId)
@@ -39,6 +41,7 @@ public class ModuleService {
         return new CategoryModulesResponseDto(category.getName(), moduleDtos);
     }
 
+    @Transactional(readOnly = true)
     public ModuleResponseDto getInfo(Long moduleId) {
 
         Module module = moduleRepository.findById(moduleId)

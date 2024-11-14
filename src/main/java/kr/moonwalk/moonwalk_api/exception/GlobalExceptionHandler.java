@@ -3,6 +3,7 @@ package kr.moonwalk.moonwalk_api.exception;
 import java.util.HashMap;
 import java.util.Map;
 import kr.moonwalk.moonwalk_api.exception.auth.InvalidRefreshTokenException;
+import kr.moonwalk.moonwalk_api.exception.notfound.CartNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
@@ -65,6 +66,14 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "ESTIMATE_NOT_FOUND");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
+
+    @ExceptionHandler(CartNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCartNotFoundException(
+        CartNotFoundException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "CART_NOT_FOUND");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(
         MethodArgumentNotValidException ex) {
