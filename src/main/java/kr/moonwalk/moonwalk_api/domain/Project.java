@@ -35,6 +35,10 @@ public class Project {
     private LocalDateTime createdAt;
 
     @OneToOne
+    @JoinColumn(name = "mood_id")
+    private Mood mood;
+
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 

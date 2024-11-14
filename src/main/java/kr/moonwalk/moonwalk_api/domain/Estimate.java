@@ -43,11 +43,11 @@ public class Estimate {
     @OneToMany(mappedBy = "estimate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cart> carts = new ArrayList<>();
 
-    public void addModuleToEstimate(Module module, int quantity) {
-        Cart cart = new Cart(this, module, quantity);
-        carts.add(cart);
-        totalPrice += module.getPrice() * quantity;
-    }
+//    public void addModuleToEstimate(Module module, int quantity) {
+//        Cart cart = new Cart(this, module, quantity);
+//        carts.add(cart);
+//        totalPrice += module.getPrice() * quantity;
+//    }
 
     public Estimate(User user, String title) {
         this.user = user;
