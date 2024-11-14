@@ -1,5 +1,7 @@
 package kr.moonwalk.moonwalk_api.domain;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
@@ -30,7 +33,7 @@ public class Estimate {
     @JoinColumn(name = "mood_id")
     private Mood mood;
 
-    @OneToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -43,16 +46,11 @@ public class Estimate {
     @OneToMany(mappedBy = "estimate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cart> carts = new ArrayList<>();
 
-//    public void addModuleToEstimate(Module module, int quantity) {
-//        Cart cart = new Cart(this, module, quantity);
-//        carts.add(cart);
-//        totalPrice += module.getPrice() * quantity;
-//    }
-
-    public Estimate(User user, String title) {
+    public Estimate(User user) {
         this.user = user;
-        this.title = title;
         this.totalPrice = 0;
         this.createAt = LocalDateTime.now();
+
+        user.getEstimates().add(this);
     }
 }

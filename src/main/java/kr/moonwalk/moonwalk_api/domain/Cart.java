@@ -1,5 +1,7 @@
 package kr.moonwalk.moonwalk_api.domain;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,17 +27,21 @@ public class Cart {
 
     private int quantity;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "estimate_id")
     private Estimate estimate;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "module_id")
     private Module module;
 
     public Cart(Estimate estimate, Module module, int quantity) {
         this.estimate = estimate;
         this.module = module;
+        this.quantity = quantity;
+    }
+
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 }

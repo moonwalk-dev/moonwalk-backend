@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import kr.moonwalk.moonwalk_api.exception.auth.InvalidRefreshTokenException;
 import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(EstimateNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEstimateNotFoundException(
+        EstimateNotFoundException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "ESTIMATE_NOT_FOUND");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(
         MethodArgumentNotValidException ex) {
