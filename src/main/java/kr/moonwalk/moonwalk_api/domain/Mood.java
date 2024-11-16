@@ -31,12 +31,23 @@ public class Mood {
 
     private String description;
 
-    @OneToOne(fetch = LAZY)
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "cover_image_id")
     private Image coverImage;
 
     @OneToMany(mappedBy = "mood", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> detailImages = new ArrayList<>();
 
+    public Mood(String name, String description, Image coverImage) {
+        this.name = name;
+        this.description = description;
+        this.coverImage = coverImage;
+    }
 
+    public void addDetailImages(List<Image> images) {
+        images.forEach(image -> {
+            image.setMood(this);
+            this.detailImages.add(image);
+        });
+    }
 }
