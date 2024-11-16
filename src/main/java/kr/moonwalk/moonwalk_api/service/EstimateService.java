@@ -6,9 +6,9 @@ import kr.moonwalk.moonwalk_api.domain.Cart;
 import kr.moonwalk.moonwalk_api.domain.Estimate;
 import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.domain.User;
-import kr.moonwalk.moonwalk_api.dto.CartAddDto;
-import kr.moonwalk.moonwalk_api.dto.CartListResponseDto;
-import kr.moonwalk.moonwalk_api.dto.CartResponseDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartAddDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.CartNotFoundException;
@@ -71,12 +71,22 @@ public class EstimateService {
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
+    @Transactional
+    public void deleteCart(Long cartId) {
+        Cart cart = cartRepository.findById(cartId)
+            .orElseThrow(() -> new CartNotFoundException("해당 카트 항목을 찾을 수 없습니다."));
+
+        cartRepository.delete(cart);
+    }
+
     @Transactional(readOnly = true)
-    public CartListResponseDto getAllCarts(Long estimateId) {
+    public CartListResponseDto getFilteredCarts(Long estimateId, List<Long> categoryIds) {
         Estimate estimate = estimateRepository.findById(estimateId)
             .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
 
         List<CartResponseDto> carts = estimate.getCarts().stream()
+            .filter(cart -> categoryIds == null || categoryIds.isEmpty() ||
+                categoryIds.contains(cart.getModule().getCategory().getId()))
             .map(cart -> new CartResponseDto(
                 cart.getId(),
                 cart.getEstimate().getId(),
@@ -89,13 +99,5 @@ public class EstimateService {
             .collect(Collectors.toList());
 
         return new CartListResponseDto(carts);
-    }
-
-    @Transactional
-    public void deleteCart(Long cartId) {
-        Cart cart = cartRepository.findById(cartId)
-            .orElseThrow(() -> new CartNotFoundException("해당 카트 항목을 찾을 수 없습니다."));
-
-        cartRepository.delete(cart);
     }
 }

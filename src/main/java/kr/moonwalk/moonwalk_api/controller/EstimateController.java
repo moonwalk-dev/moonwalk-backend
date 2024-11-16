@@ -2,8 +2,9 @@ package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import kr.moonwalk.moonwalk_api.dto.CartAddDto;
-import kr.moonwalk.moonwalk_api.dto.CartListResponseDto;
+import java.util.List;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartAddDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
 import kr.moonwalk.moonwalk_api.service.EstimateService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -41,18 +43,22 @@ public class EstimateController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "장바구니 리스트 조회")
+    @Operation(summary = "카테고리별 장바구니 리스트 조회",
+        description = "견적 ID를 경로로 받고, 선택된 카테고리 ID들로 장바구니를 필터링합니다.")
     @GetMapping("/{estimateId}/carts")
-    public ResponseEntity<CartListResponseDto> getAllCarts(@PathVariable Long estimateId) {
+    public ResponseEntity<CartListResponseDto> getFilteredCarts(
+        @PathVariable Long estimateId,
+        @RequestParam(required = false) List<Long> categoryIds) {
 
-        CartListResponseDto response = estimateService.getAllCarts(estimateId);
+        CartListResponseDto response = estimateService.getFilteredCarts(estimateId, categoryIds);
 
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "장바구니 항목 삭제", description = "지정한 카트 ID를 통해 해당 장바구니 항목을 삭제합니다.")
-    @DeleteMapping("/carts/{cartId}")
-    public ResponseEntity<Void> deleteCart(@PathVariable Long cartId) {
+
+    @Operation(summary = "장바구니 항목 삭제", description = "해당 장바구니 항목을 삭제합니다.")
+    @DeleteMapping("/{estimateId}/carts/{cartId}")
+    public ResponseEntity<Void> deleteCart(@PathVariable Long estimateId, @PathVariable Long cartId) {
         estimateService.deleteCart(cartId);
         return ResponseEntity.noContent().build();
     }
