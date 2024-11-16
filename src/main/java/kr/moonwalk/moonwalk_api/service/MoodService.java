@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Image;
 import kr.moonwalk.moonwalk_api.domain.Mood;
-import kr.moonwalk.moonwalk_api.dto.MoodResponseDto;
+import kr.moonwalk.moonwalk_api.dto.mood.MoodResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mood.MoodDto;
 import kr.moonwalk.moonwalk_api.dto.mood.MoodListResponseDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.MoodNotFoundException;

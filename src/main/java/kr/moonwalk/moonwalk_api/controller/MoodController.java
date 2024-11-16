@@ -1,7 +1,7 @@
 package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import kr.moonwalk.moonwalk_api.dto.MoodResponseDto;
+import kr.moonwalk.moonwalk_api.dto.mood.MoodResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mood.MoodListResponseDto;
 import kr.moonwalk.moonwalk_api.service.MoodService;
 import lombok.RequiredArgsConstructor;

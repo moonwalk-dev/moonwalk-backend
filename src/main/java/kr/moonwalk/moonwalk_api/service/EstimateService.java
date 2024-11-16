@@ -5,18 +5,22 @@ import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Cart;
 import kr.moonwalk.moonwalk_api.domain.Estimate;
 import kr.moonwalk.moonwalk_api.domain.Module;
+import kr.moonwalk.moonwalk_api.domain.Mood;
 import kr.moonwalk.moonwalk_api.domain.User;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartResponseDto;
-import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
+import kr.moonwalk.moonwalk_api.dto.mood.EstimateMoodResponseDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.CartNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.MoodNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CartRepository;
 import kr.moonwalk.moonwalk_api.repository.EstimateRepository;
 import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
+import kr.moonwalk.moonwalk_api.repository.MoodRepository;
 import kr.moonwalk.moonwalk_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +37,7 @@ public class EstimateService {
     private final EstimateRepository estimateRepository;
     private final ModuleRepository moduleRepository;
     private final CartRepository cartRepository;
+    private final MoodRepository moodRepository;
 
     @Transactional
     public EstimateCreateDto createEstimate() {
@@ -49,7 +54,7 @@ public class EstimateService {
         Module module = moduleRepository.findById(cartAddDto.getModuleId())
             .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
         Estimate estimate = estimateRepository.findById(estimateId)
-            .orElseThrow(() -> new EstimateNotFoundException("간단 견적을 찾을 수 없습니다."));
+            .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
 
         Cart cart = cartRepository.findByEstimateAndModule(estimate, module)
             .orElseGet(() -> new Cart(estimate, module, cartAddDto.getQuantity()));
@@ -59,6 +64,9 @@ public class EstimateService {
         }
 
         cartRepository.save(cart);
+
+        estimate.updateTotalPrice();
+        estimateRepository.save(estimate);
 
         return new CartAddResponseDto(module.getId(), module.getName(), estimate.getId(), cart.getQuantity());
     }
@@ -99,5 +107,19 @@ public class EstimateService {
             .collect(Collectors.toList());
 
         return new CartListResponseDto(carts);
+    }
+
+    public EstimateMoodResponseDto setMood(Long estimateId, Long moodId) {
+        Estimate estimate = estimateRepository.findById(estimateId)
+            .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
+
+        Mood mood = moodRepository.findById(moodId)
+            .orElseThrow(() -> new MoodNotFoundException("무드를 찾을 수 없습니다."));
+
+        estimate.setMood(mood);
+
+        return new EstimateMoodResponseDto(estimate.getId(), mood.getId(), mood.getName(),
+            mood.getCoverImage().getImageUrl());
+
     }
 }

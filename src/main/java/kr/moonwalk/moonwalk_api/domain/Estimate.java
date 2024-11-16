@@ -57,4 +57,14 @@ public class Estimate {
 
         user.getEstimates().add(this);
     }
+
+    public void setMood(Mood mood) {
+        this.mood = mood;
+    }
+
+    public void updateTotalPrice() {
+        this.totalPrice = carts.stream()
+            .mapToInt(cart -> cart.getModule().getPrice() * cart.getQuantity())
+            .sum();
+    }
 }

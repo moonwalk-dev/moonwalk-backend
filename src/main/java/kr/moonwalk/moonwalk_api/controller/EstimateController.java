@@ -3,15 +3,17 @@ package kr.moonwalk.moonwalk_api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
+import kr.moonwalk.moonwalk_api.dto.mood.EstimateMoodResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddDto;
-import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
 import kr.moonwalk.moonwalk_api.service.EstimateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,6 +63,15 @@ public class EstimateController {
     public ResponseEntity<Void> deleteCart(@PathVariable Long estimateId, @PathVariable Long cartId) {
         estimateService.deleteCart(cartId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "견적 무드 설정")
+    @PatchMapping("/{estimateId}/mood")
+    public ResponseEntity<EstimateMoodResponseDto> setMood(
+        @PathVariable Long estimateId,
+        @RequestParam Long moodId) {
+        EstimateMoodResponseDto response = estimateService.setMood(estimateId, moodId);
+        return ResponseEntity.ok(response);
     }
 
 }

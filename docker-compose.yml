@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:15
     restart: always
-    container_name: moonwalk-db
+    container_name: moonwalk_db
     env_file: .env
     ports:
       - "5432:5432"
