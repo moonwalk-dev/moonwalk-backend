@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Order(2)
+@Order(4)
 public class GuideLoader implements CommandLineRunner {
 
     private final GuideRepository guideRepository;

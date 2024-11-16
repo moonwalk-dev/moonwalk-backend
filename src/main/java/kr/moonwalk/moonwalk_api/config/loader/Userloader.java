@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Order(3)
+@Order(1)
 public class Userloader implements CommandLineRunner {
 
     private final UserRepository userRepository;

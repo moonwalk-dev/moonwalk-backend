@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Order(1)
+@Order(2)
 public class CategoryLoader implements CommandLineRunner {
 
     private final CategoryRepository categoryRepository;
