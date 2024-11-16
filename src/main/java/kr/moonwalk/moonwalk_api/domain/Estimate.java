@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -50,6 +51,9 @@ public class Estimate {
         this.user = user;
         this.totalPrice = 0;
         this.createAt = LocalDateTime.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.title = "Estimate - " + this.createAt.format(formatter);
 
         user.getEstimates().add(this);
     }
