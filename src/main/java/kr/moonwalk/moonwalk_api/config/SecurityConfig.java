@@ -30,6 +30,7 @@ public class SecurityConfig {
 
         "/api/categories/**",
         "/api/modules/**",
+        "/api/moods/**",
 //        "/api/guides/**",
 
 
