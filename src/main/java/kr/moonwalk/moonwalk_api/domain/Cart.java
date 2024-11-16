@@ -39,6 +39,8 @@ public class Cart {
         this.estimate = estimate;
         this.module = module;
         this.quantity = quantity;
+
+        estimate.getCarts().add(this);
     }
 
     public void setQuantity(int quantity) {

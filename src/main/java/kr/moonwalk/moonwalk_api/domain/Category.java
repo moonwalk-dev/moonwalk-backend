@@ -40,10 +40,27 @@ public class Category {
 
     public Category(String name, Category parentCategory) {
         this.name = name;
+        if (parentCategory != null) {
+            parentCategory.addSubCategory(this);
+        }
         this.parentCategory = parentCategory;
     }
 
     public void updateName(String name) {
         this.name = name;
+    }
+
+    public void addSubCategory(Category subCategory) {
+        this.subCategories.add(subCategory);
+        subCategory.setParentCategory(this);
+    }
+
+    public void removeSubCategory(Category subCategory) {
+        this.subCategories.remove(subCategory);
+        subCategory.setParentCategory(null);
+    }
+
+    private void setParentCategory(Category parentCategory) {
+        this.parentCategory = parentCategory;
     }
 }
