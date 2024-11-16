@@ -1,4 +1,4 @@
-package kr.moonwalk.moonwalk_api.dto;
+package kr.moonwalk.moonwalk_api.dto.estimate;
 
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
