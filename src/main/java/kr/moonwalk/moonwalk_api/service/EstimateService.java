@@ -12,6 +12,7 @@ import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.EstimateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mood.EstimateMoodResponseDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.CartNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
@@ -117,9 +118,29 @@ public class EstimateService {
             .orElseThrow(() -> new MoodNotFoundException("무드를 찾을 수 없습니다."));
 
         estimate.setMood(mood);
+        estimateRepository.save(estimate);
 
         return new EstimateMoodResponseDto(estimate.getId(), mood.getId(), mood.getName(),
             mood.getCoverImage().getImageUrl());
 
+    }
+
+    public EstimateResponseDto getInfo(Long estimateId) {
+        Estimate estimate = estimateRepository.findById(estimateId)
+            .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
+
+        Long moodId = estimate.getMood() != null ? estimate.getMood().getId() : null;
+        String moodName = estimate.getMood() != null ? estimate.getMood().getName() : "무드가 설정되지 않았습니다.";
+        String coverImage = estimate.getMood() != null ? estimate.getMood().getCoverImage().getImageUrl() : null;
+
+        return new EstimateResponseDto(
+            estimate.getId(),
+            moodId,
+            moodName,
+            coverImage,
+            estimate.getTotalPrice(),
+            estimate.getTitle(),
+            estimate.getCreateAt()
+        );
     }
 }

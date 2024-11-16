@@ -3,11 +3,12 @@ package kr.moonwalk.moonwalk_api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
-import kr.moonwalk.moonwalk_api.dto.mood.EstimateMoodResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.EstimateResponseDto;
+import kr.moonwalk.moonwalk_api.dto.mood.EstimateMoodResponseDto;
 import kr.moonwalk.moonwalk_api.service.EstimateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +72,14 @@ public class EstimateController {
         @PathVariable Long estimateId,
         @RequestParam Long moodId) {
         EstimateMoodResponseDto response = estimateService.setMood(estimateId, moodId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "특정 견적 정보 조회")
+    @GetMapping("/{estimateId}")
+    public ResponseEntity<EstimateResponseDto> getInfo(
+        @PathVariable Long estimateId) {
+        EstimateResponseDto response = estimateService.getInfo(estimateId);
         return ResponseEntity.ok(response);
     }
 
