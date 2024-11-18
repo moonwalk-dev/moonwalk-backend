@@ -35,9 +35,9 @@ public class ProjectModule {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    public static ProjectModule createFromInventory(Inventory inventory, Project project, int positionX, int positionY) {
+    public static ProjectModule createFromMyModule(MyModule myModule, Project project, int positionX, int positionY) {
         ProjectModule projectModule = new ProjectModule();
-        projectModule.module = inventory.getModule();
+        projectModule.module = myModule.getModule();
         projectModule.project = project;
         projectModule.positionX = positionX;
         projectModule.positionY = positionY;

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "inventories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Inventory {
+public class MyModule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,14 +34,14 @@ public class Inventory {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    public static Inventory createFromCart(Cart cart, Project project) {
-        Inventory inventory = new Inventory();
-        inventory.module = cart.getModule();
-        inventory.project = project;
-        inventory.quantity = cart.getQuantity();
-        inventory.usedQuantity = 0;
+    public static MyModule createFromCart(Cart cart, Project project) {
+        MyModule myModule = new MyModule();
+        myModule.module = cart.getModule();
+        myModule.project = project;
+        myModule.quantity = cart.getQuantity();
+        myModule.usedQuantity = 0;
 
-        return inventory;
+        return myModule;
     }
 
     public void updateUsedQuantity(int amountUsed) {
