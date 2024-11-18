@@ -42,7 +42,7 @@ public class Estimate {
 
     private int totalPrice;
 
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "estimate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cart> carts = new ArrayList<>();
@@ -50,10 +50,10 @@ public class Estimate {
     public Estimate(User user) {
         this.user = user;
         this.totalPrice = 0;
-        this.createAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        this.title = "Estimate - " + this.createAt.format(formatter);
+        this.title = "Estimate - " + this.createdAt.format(formatter);
 
         user.getEstimates().add(this);
     }

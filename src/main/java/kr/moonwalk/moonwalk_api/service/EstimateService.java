@@ -110,6 +110,7 @@ public class EstimateService {
         return new CartListResponseDto(carts);
     }
 
+    @Transactional
     public EstimateMoodResponseDto setMood(Long estimateId, Long moodId) {
         Estimate estimate = estimateRepository.findById(estimateId)
             .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
@@ -125,6 +126,7 @@ public class EstimateService {
 
     }
 
+    @Transactional(readOnly = true)
     public EstimateResponseDto getInfo(Long estimateId) {
         Estimate estimate = estimateRepository.findById(estimateId)
             .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
@@ -140,7 +142,7 @@ public class EstimateService {
             coverImage,
             estimate.getTotalPrice(),
             estimate.getTitle(),
-            estimate.getCreateAt()
+            estimate.getCreatedAt()
         );
     }
 }

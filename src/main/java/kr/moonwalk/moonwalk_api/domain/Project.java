@@ -14,6 +14,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -55,17 +56,21 @@ public class Project {
     @JoinColumn(name = "blueprint_image_id")
     private Image blueprintImage;
 
-    public Project(Estimate estimate, User user, Image blueprintImage) {
+    public Project(Estimate estimate, User user) {
 
         this.createdAt = LocalDateTime.now();
         this.user = user;
         user.getProjects().add(this);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.title = "Project - " + this.createdAt.format(formatter);
 
         for (Cart cart : estimate.getCarts()) {
             Inventory inventory = Inventory.createFromCart(cart, this);
             this.inventories.add(inventory);
         }
+    }
 
+    public void setBlueprintImage(Image blueprintImage) {
         this.blueprintImage = blueprintImage;
     }
 }
