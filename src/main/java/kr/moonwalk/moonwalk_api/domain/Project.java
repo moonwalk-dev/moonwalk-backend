@@ -51,25 +51,21 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectModule> projectModules = new ArrayList<>();
 
-    public static Project createFromEstimate(Estimate estimate, User user, String title, String client, String area) {
-        Project project = new Project();
-        project.title = title;
-        project.client = client;
-        project.area = area;
-        project.createdAt = LocalDateTime.now();
-        project.user = user;
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "blueprint_image_id")
+    private Image blueprintImage;
+
+    public Project(Estimate estimate, User user, Image blueprintImage) {
+
+        this.createdAt = LocalDateTime.now();
+        this.user = user;
+        user.getProjects().add(this);
 
         for (Cart cart : estimate.getCarts()) {
-            Inventory inventory = Inventory.createFromCart(cart, project);
-            project.inventories.add(inventory);
-
-//            ProjectModule projectModule = ProjectModule.createFromInventory(inventory, project);
-//            project.projectModules.add(projectModule);
-
-//            total += cart.getModule().getPrice() * cart.getQuantity();
+            Inventory inventory = Inventory.createFromCart(cart, this);
+            this.inventories.add(inventory);
         }
-        project.totalPrice = 0;
 
-        return project;
+        this.blueprintImage = blueprintImage;
     }
 }
