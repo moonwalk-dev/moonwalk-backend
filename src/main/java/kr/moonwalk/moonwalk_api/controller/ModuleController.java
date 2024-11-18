@@ -1,8 +1,10 @@
 package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import kr.moonwalk.moonwalk_api.dto.module.CategoryModulesResponseDto;
+import java.util.List;
+import kr.moonwalk.moonwalk_api.dto.module.CategoriesModulesResponseDto;
 import kr.moonwalk.moonwalk_api.dto.module.ModuleResponseDto;
+import kr.moonwalk.moonwalk_api.dto.module.ModuleSearchResultDto;
 import kr.moonwalk.moonwalk_api.service.ModuleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +23,11 @@ public class ModuleController {
 
     @Operation(summary = "카테고리 별 모듈 조회")
     @GetMapping
-    public ResponseEntity<CategoryModulesResponseDto> getModulesByCategory(
-        @RequestParam(required = true) Long categoryId) {
+    public ResponseEntity<CategoriesModulesResponseDto> getModulesByCategories(
+        @RequestParam(required = true) List<Long> categoryIds) {
 
-        CategoryModulesResponseDto response = moduleService.getModulesByCategoryId(categoryId);
+        CategoriesModulesResponseDto response = moduleService.getModulesByCategoryIds(categoryIds);
         return ResponseEntity.ok(response);
-
     }
 
     @Operation(summary = "특정 모듈 조회")
@@ -35,6 +36,14 @@ public class ModuleController {
 
         ModuleResponseDto response = moduleService.getInfo(moduleId);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "모듈 이름으로 검색")
+    @GetMapping("/search")
+    public ResponseEntity<ModuleSearchResultDto> searchModulesByName(
+        @RequestParam("query") String query) {
+        ModuleSearchResultDto response = moduleService.searchModulesByName(query);
         return ResponseEntity.ok(response);
     }
 }
