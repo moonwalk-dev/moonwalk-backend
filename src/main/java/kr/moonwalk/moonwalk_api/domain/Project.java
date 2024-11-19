@@ -47,7 +47,7 @@ public class Project {
     private User user;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MyModule> inventories = new ArrayList<>();
+    private List<MyModule> myModules = new ArrayList<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectModule> projectModules = new ArrayList<>();
@@ -66,7 +66,7 @@ public class Project {
 
         for (Cart cart : estimate.getCarts()) {
             MyModule myModule = MyModule.createFromCart(cart, this);
-            this.inventories.add(myModule);
+            this.myModules.add(myModule);
         }
     }
 

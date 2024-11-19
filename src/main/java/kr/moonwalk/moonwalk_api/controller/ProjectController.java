@@ -1,11 +1,16 @@
 package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
+import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.MyModuleSearchResultDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
 import kr.moonwalk.moonwalk_api.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +33,27 @@ public class ProjectController {
 
         ProjectCreateResponseDto response = projectService.createProject(estimateId, blueprintImage);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "카테고리별 마이모듈 리스트 조회",
+        description = "프로젝트 ID를 경로로 받고, 선택된 카테고리 ID들로 마이모듈 리스트를 필터링합니다.")
+    @GetMapping("/{projectId}/myModules")
+    public ResponseEntity<MyModuleListResponseDto> getFilteredMyModules(
+        @PathVariable Long projectId,
+        @RequestParam(required = false) List<Long> categoryIds) {
+
+        MyModuleListResponseDto response = projectService.getFilteredMyModules(projectId, categoryIds);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "모듈 이름으로 마이모듈 리스트 검색")
+    @GetMapping("/{projectId}/myModules/search")
+    public ResponseEntity<MyModuleSearchResultDto> searchMyModulesByName(
+        @PathVariable Long projectId,
+        @RequestParam("query") String query) {
+        MyModuleSearchResultDto response = projectService.searchMyModulesByName(projectId, query);
         return ResponseEntity.ok(response);
     }
 }

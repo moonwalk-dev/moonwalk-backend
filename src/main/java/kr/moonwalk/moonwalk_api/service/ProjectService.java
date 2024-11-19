@@ -1,12 +1,21 @@
 package kr.moonwalk.moonwalk_api.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Estimate;
 import kr.moonwalk.moonwalk_api.domain.Image;
+import kr.moonwalk.moonwalk_api.domain.MyModule;
 import kr.moonwalk.moonwalk_api.domain.Project;
 import kr.moonwalk.moonwalk_api.domain.User;
+import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.MyModuleResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.MyModuleSearchResultDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.ProjectNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.EstimateRepository;
+import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
+import kr.moonwalk.moonwalk_api.repository.MyModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.ProjectRepository;
 import kr.moonwalk.moonwalk_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +34,8 @@ public class ProjectService {
     private final EstimateRepository estimateRepository;
     private final ImageService imageService;
     private final UserRepository userRepository;
+    private final MyModuleRepository myModuleRepository;
+    private final ModuleRepository moduleRepository;
 
     @Transactional
     public ProjectCreateResponseDto createProject(Long estimateId, MultipartFile blueprintImageFile) {
@@ -61,4 +72,50 @@ public class ProjectService {
         }
         return "";
     }
+
+    @Transactional(readOnly = true)
+    public MyModuleListResponseDto getFilteredMyModules(Long projectId, List<Long> categoryIds) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        List<MyModuleResponseDto> myModules = project.getMyModules().stream()
+            .filter(myModule -> categoryIds == null || categoryIds.isEmpty() ||
+                categoryIds.contains(myModule.getModule().getCategory().getId()))
+            .map(myModule -> new MyModuleResponseDto(
+                myModule.getId(),
+                myModule.getProject().getId(),
+                myModule.getModule().getId(),
+                myModule.getModule().getName(),
+                myModule.getModule().getCapacity(),
+                myModule.getModule().getSerialNumber(),
+                myModule.getModule().getIsoImage().getImageUrl(),
+                myModule.getQuantity())).collect(Collectors.toList());
+
+        return new MyModuleListResponseDto(myModules);
+    }
+
+    @Transactional(readOnly = true)
+    public MyModuleSearchResultDto searchMyModulesByName(Long projectId, String query) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        List<MyModule> myModules = myModuleRepository.findByProjectAndModuleNameContainingIgnoreCase(project, query);
+
+        List<MyModuleResponseDto> myModuleDtos = myModules.stream()
+            .map(myModule -> new MyModuleResponseDto(
+                myModule.getId(),
+                project.getId(),
+                myModule.getModule().getId(),
+                myModule.getModule().getName(),
+                myModule.getModule().getCapacity(),
+                myModule.getModule().getSerialNumber(),
+                myModule.getModule().getIsoImage() != null ? myModule.getModule().getIsoImage().getImageUrl() : "default-image-url",
+                myModule.getQuantity()
+            ))
+            .collect(Collectors.toList());
+
+        return new MyModuleSearchResultDto(project.getId(), query, myModuleDtos);
+    }
+
+
 }

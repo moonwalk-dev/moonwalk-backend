@@ -8,6 +8,7 @@ import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.MoodNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.ProjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -79,6 +80,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMoodNotFoundException(
         MoodNotFoundException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "MOOD_NOT_FOUND");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ProjectNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProjectNotFoundException(
+        ProjectNotFoundException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "PROJECT_NOT_FOUND");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
