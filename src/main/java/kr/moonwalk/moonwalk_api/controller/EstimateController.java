@@ -37,7 +37,7 @@ public class EstimateController {
     }
 
     @Operation(summary = "장바구니에 모듈 추가", description = "견적에 없으면 새로운 장바구니를 생성하고 모듈을 추가하며, 이미 존재하는 경우 모듈의 수량을 업데이트합니다.")
-    @PostMapping("/{estimateId}")
+    @PostMapping("/{estimateId}/carts")
     public ResponseEntity<CartAddResponseDto> addModule(@PathVariable Long estimateId,
         @Valid @RequestBody CartAddDto cartAddDto) {
 
@@ -62,7 +62,7 @@ public class EstimateController {
     @Operation(summary = "장바구니 항목 삭제", description = "해당 장바구니 항목을 삭제합니다.")
     @DeleteMapping("/{estimateId}/carts/{cartId}")
     public ResponseEntity<Void> deleteCart(@PathVariable Long estimateId, @PathVariable Long cartId) {
-        estimateService.deleteCart(cartId);
+        estimateService.deleteCart(estimateId, cartId);
         return ResponseEntity.noContent().build();
     }
 

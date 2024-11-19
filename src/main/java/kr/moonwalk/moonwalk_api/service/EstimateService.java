@@ -81,10 +81,14 @@ public class EstimateService {
     }
 
     @Transactional
-    public void deleteCart(Long cartId) {
+    public void deleteCart(Long estimateId, Long cartId) {
+        Estimate estimate = estimateRepository.findById(estimateId)
+            .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
+
         Cart cart = cartRepository.findById(cartId)
             .orElseThrow(() -> new CartNotFoundException("해당 카트 항목을 찾을 수 없습니다."));
 
+        estimate.getCarts().remove(cart);
         cartRepository.delete(cart);
     }
 

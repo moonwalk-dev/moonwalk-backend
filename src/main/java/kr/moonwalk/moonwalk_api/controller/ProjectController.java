@@ -3,8 +3,6 @@ package kr.moonwalk.moonwalk_api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
-import kr.moonwalk.moonwalk_api.dto.estimate.CartAddDto;
-import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
@@ -14,6 +12,7 @@ import kr.moonwalk.moonwalk_api.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,5 +70,12 @@ public class ProjectController {
         MyModuleAddResponseDto response = projectService.addModule(projectId, myModuleAddDto);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "마이모듈 항목 삭제", description = "해당 마이모듈 항목을 삭제합니다.")
+    @DeleteMapping("/{projectId}/myModules/{myModuleId}")
+    public ResponseEntity<Void> deleteMyModule(@PathVariable Long projectId, @PathVariable Long myModuleId) {
+        projectService.deleteMyModule(projectId, myModuleId);
+        return ResponseEntity.noContent().build();
     }
 }
