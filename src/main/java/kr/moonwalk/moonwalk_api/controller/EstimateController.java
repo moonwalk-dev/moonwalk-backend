@@ -36,7 +36,7 @@ public class EstimateController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "장바구니에 모듈 추가", description = "견적이 없으면 새로운 장바구니를 생성하고 모듈을 추가하며, 이미 존재하는 경우 모듈의 수량을 업데이트합니다.")
+    @Operation(summary = "장바구니에 모듈 추가", description = "견적에 없으면 새로운 장바구니를 생성하고 모듈을 추가하며, 이미 존재하는 경우 모듈의 수량을 업데이트합니다.")
     @PostMapping("/{estimateId}")
     public ResponseEntity<CartAddResponseDto> addModule(@PathVariable Long estimateId,
         @Valid @RequestBody CartAddDto cartAddDto) {

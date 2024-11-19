@@ -1,7 +1,12 @@
 package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.util.List;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartAddDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddDto;
+import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleSearchResultDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
@@ -12,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -54,6 +60,16 @@ public class ProjectController {
         @PathVariable Long projectId,
         @RequestParam("query") String query) {
         MyModuleSearchResultDto response = projectService.searchMyModulesByName(projectId, query);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "마이 모듈 추가", description = "마이 모듈에 없으면 새로운 모듈을 추가하며, 이미 존재하는 경우 모듈의 수량을 업데이트합니다.")
+    @PostMapping("/{projectId}")
+    public ResponseEntity<MyModuleAddResponseDto> addModule(@PathVariable Long projectId,
+        @Valid @RequestBody MyModuleAddDto myModuleAddDto) {
+
+        MyModuleAddResponseDto response = projectService.addModule(projectId, myModuleAddDto);
+
         return ResponseEntity.ok(response);
     }
 }

@@ -4,14 +4,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Estimate;
 import kr.moonwalk.moonwalk_api.domain.Image;
+import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.domain.MyModule;
 import kr.moonwalk.moonwalk_api.domain.Project;
 import kr.moonwalk.moonwalk_api.domain.User;
+import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddDto;
+import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleSearchResultDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ProjectNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.EstimateRepository;
 import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
@@ -117,5 +121,34 @@ public class ProjectService {
         return new MyModuleSearchResultDto(project.getId(), query, myModuleDtos);
     }
 
+    @Transactional
+    public MyModuleAddResponseDto addModule(Long projectId, MyModuleAddDto myModuleAddDto) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
+        Module module = moduleRepository.findById(myModuleAddDto.getModuleId())
+            .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
+
+        MyModule myModule = myModuleRepository.findByProjectAndModule(project, module)
+            .orElseGet(() -> new MyModule(project, module, myModuleAddDto.getQuantity()));
+
+        if (myModule.getId() != null) {
+            if (myModule.getUsedQuantity() > myModuleAddDto.getQuantity()) {
+                throw new IllegalArgumentException(
+                    "사용하려는 모듈 수량이 이미 사용된 수량보다 적습니다. (이미 사용된 수량: "
+                        + myModule.getUsedQuantity()
+                        + ", 입력된 수량: "
+                        + myModuleAddDto.getQuantity() + ")"
+                );
+            }
+            myModule.setQuantity(myModuleAddDto.getQuantity());
+        }
+        myModuleRepository.save(myModule);
+
+        project.updateEstimatedTotalPrice();
+        projectRepository.save(project);
+
+        return new MyModuleAddResponseDto(module.getId(), module.getName(), project.getId(),
+            myModule.getQuantity(), myModule.getUsedQuantity());
+    }
 }

@@ -44,6 +44,18 @@ public class MyModule {
         return myModule;
     }
 
+    public MyModule(Project project, Module module, int quantity) {
+        this.project = project;
+        this.module = module;
+        this.quantity = quantity;
+        this.usedQuantity = 0;
+
+        project.getMyModules().add(this);
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
     public void updateUsedQuantity(int amountUsed) {
         this.usedQuantity -= amountUsed;
     }

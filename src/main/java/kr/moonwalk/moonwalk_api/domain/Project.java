@@ -33,7 +33,8 @@ public class Project {
     private Long id;
 
     private String title;
-    private int totalPrice;
+    private int estimatedTotalPrice;
+    private int allocatedTotalPrice;
     private String client;
     private String area;
     private LocalDateTime createdAt;
@@ -63,14 +64,28 @@ public class Project {
         user.getProjects().add(this);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.title = "Project - " + this.createdAt.format(formatter);
+        this.allocatedTotalPrice = 0;
 
         for (Cart cart : estimate.getCarts()) {
             MyModule myModule = MyModule.createFromCart(cart, this);
             this.myModules.add(myModule);
         }
+        updateEstimatedTotalPrice();
     }
 
     public void setBlueprintImage(Image blueprintImage) {
         this.blueprintImage = blueprintImage;
+    }
+
+    public void updateEstimatedTotalPrice() {
+        this.estimatedTotalPrice = myModules.stream()
+            .mapToInt(myModule -> myModule.getModule().getPrice() * myModule.getQuantity())
+            .sum();
+    }
+
+    public void updateAllocatedTotalPrice() {
+        this.allocatedTotalPrice = myModules.stream()
+            .mapToInt(myModule -> myModule.getModule().getPrice() * myModule.getUsedQuantity())
+            .sum();
     }
 }
