@@ -3,8 +3,8 @@ package kr.moonwalk.moonwalk_api.util;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import javax.crypto.SecretKey;
 import java.util.Date;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -15,8 +15,8 @@ public class JwtUtil {
     @Value("${spring.jwt.secret}")
     private String secret;
 
-    private static final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 60;
-    private static final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 30;
+    private static final long ACCESS_TOKEN_VALIDITY = 1000L * 60 * 60;
+    private static final long REFRESH_TOKEN_VALIDITY = 1000L * 60 * 60 * 24 * 30;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());

@@ -56,4 +56,12 @@ public class AuthController {
         JwtResponse jwtResponse = authService.refreshAccessToken(refreshToken);
         return ResponseEntity.ok(jwtResponse);
     }
+
+    @Operation(summary = "로그아웃")
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String refreshTokenHeader) {
+        String refreshToken = refreshTokenHeader.substring(7);
+        authService.logout(refreshToken);
+        return ResponseEntity.ok("로그아웃되었습니다.");
+    }
 }
