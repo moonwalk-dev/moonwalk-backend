@@ -10,6 +10,6 @@ public class MyModuleAddDto {
 
     private Long moduleId;
 
-    @Min(value = 1, message = "최소 수량은 1개입니다.")
+    @Min(value = 0, message = "최소 수량은 0개입니다.")
     private int quantity;
 }
