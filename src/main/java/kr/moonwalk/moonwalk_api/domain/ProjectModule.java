@@ -35,13 +35,15 @@ public class ProjectModule {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    public static ProjectModule createFromMyModule(MyModule myModule, Project project, int positionX, int positionY) {
+    public static ProjectModule createMyModule(MyModule myModule, Project project, int positionX, int positionY, int angle) {
         ProjectModule projectModule = new ProjectModule();
         projectModule.module = myModule.getModule();
         projectModule.project = project;
         projectModule.positionX = positionX;
         projectModule.positionY = positionY;
-        projectModule.angle = 0;
+        projectModule.angle = angle;
+
+        project.getProjectModules().add(projectModule);
 
         return projectModule;
     }

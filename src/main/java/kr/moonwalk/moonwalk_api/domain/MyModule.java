@@ -56,7 +56,8 @@ public class MyModule {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-    public void updateUsedQuantity(int amountUsed) {
-        this.usedQuantity -= amountUsed;
+
+    public void updateUsedQuantity() {
+        this.usedQuantity += 1;
     }
 }

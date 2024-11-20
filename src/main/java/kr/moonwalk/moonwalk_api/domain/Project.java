@@ -34,7 +34,7 @@ public class Project {
 
     private String title;
     private int estimatedTotalPrice;
-    private int allocatedTotalPrice;
+    private int placedTotalPrice;
     private String client;
     private String area;
     private LocalDateTime createdAt;
@@ -64,7 +64,7 @@ public class Project {
         user.getProjects().add(this);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.title = "Project - " + this.createdAt.format(formatter);
-        this.allocatedTotalPrice = 0;
+        this.placedTotalPrice = 0;
 
         for (Cart cart : estimate.getCarts()) {
             MyModule myModule = MyModule.createFromCart(cart, this);
@@ -83,8 +83,8 @@ public class Project {
             .sum();
     }
 
-    public void updateAllocatedTotalPrice() {
-        this.allocatedTotalPrice = myModules.stream()
+    public void updatePlacedTotalPrice() {
+        this.placedTotalPrice = myModules.stream()
             .mapToInt(myModule -> myModule.getModule().getPrice() * myModule.getUsedQuantity())
             .sum();
     }

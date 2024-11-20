@@ -3,8 +3,11 @@ package kr.moonwalk.moonwalk_api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
+import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceDto;
+import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.MyModuleDetailResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleSearchResultDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
@@ -41,7 +44,7 @@ public class ProjectController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "카테고리별 마이모듈 리스트 조회",
+    @Operation(summary = "카테고리 별 마이모듈 리스트 조회",
         description = "프로젝트 ID를 경로로 받고, 선택된 카테고리 ID들로 마이모듈 리스트를 필터링합니다.")
     @GetMapping("/{projectId}/myModules")
     public ResponseEntity<MyModuleListResponseDto> getFilteredMyModules(
@@ -77,5 +80,22 @@ public class ProjectController {
     public ResponseEntity<Void> deleteMyModule(@PathVariable Long projectId, @PathVariable Long myModuleId) {
         projectService.deleteMyModule(projectId, myModuleId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "모듈 배치")
+    @PostMapping("/{projectId}/boards/{moduleId}")
+    public ResponseEntity<ModulePlaceResponseDto> placeModule(@PathVariable Long projectId, @PathVariable Long moduleId,
+        @Valid @RequestBody ModulePlaceDto modulePlaceDto) {
+
+        ModulePlaceResponseDto response = projectService.placeModule(projectId, moduleId, modulePlaceDto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "마이모듈 항목 상세 조회")
+    @GetMapping("/{projectId}/myModules/{myModuleId}")
+    public ResponseEntity<MyModuleDetailResponseDto> getInfoMyModule(@PathVariable Long projectId, @PathVariable Long myModuleId) {
+        MyModuleDetailResponseDto response = projectService.getInfoMyModule(projectId, myModuleId);
+        return ResponseEntity.ok(response);
     }
 }
