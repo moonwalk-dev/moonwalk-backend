@@ -27,4 +27,9 @@ public class RefreshToken {
         this.email = email;
         this.expirationDate = expirationDate;
     }
+
+    public void updateToken(String token, LocalDateTime expirationDate) {
+        this.token = token;
+        this.expirationDate = expirationDate;
+    }
 }

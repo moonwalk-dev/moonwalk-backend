@@ -8,6 +8,10 @@ import lombok.Data;
 @Data
 public class UserRegistrationDto {
 
+    @NotBlank(message = "이름 필수입니다.")
+    @Schema(description = "이름", defaultValue = "문워크디자인")
+    private String username;
+
     @NotBlank(message = "이메일 필수입니다.")
     @Schema(description = "이메일", defaultValue = "moonwalk@gmail.com")
     private String email;

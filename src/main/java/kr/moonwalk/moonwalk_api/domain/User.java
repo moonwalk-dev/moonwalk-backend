@@ -27,6 +27,8 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
+    private String username;
+
     private String email;
 
     private String password;
@@ -44,7 +46,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Estimate> estimates = new ArrayList<>();
 
-    public User(String email, String password, Role role) {
+    public User(String username, String email, String password, Role role) {
+        this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;

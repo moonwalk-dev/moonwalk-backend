@@ -23,6 +23,7 @@ public class Userloader implements CommandLineRunner {
 
         if (!adminExists) {
             User adminUser = new User(
+                "문워크디자인관리자",
                 "moonwalk",
                 passwordEncoder.encode("admin1234"),
                 Role.ROLE_ADMIN
