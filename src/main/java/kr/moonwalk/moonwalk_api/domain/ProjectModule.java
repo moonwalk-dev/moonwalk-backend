@@ -47,4 +47,10 @@ public class ProjectModule {
 
         return projectModule;
     }
+
+    public void updatePosition(int positionX, int positionY, int angle) {
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.angle = angle;
+    }
 }

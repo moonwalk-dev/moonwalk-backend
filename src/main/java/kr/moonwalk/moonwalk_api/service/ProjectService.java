@@ -1,6 +1,7 @@
 package kr.moonwalk.moonwalk_api.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Category;
 import kr.moonwalk.moonwalk_api.domain.Estimate;
@@ -12,6 +13,7 @@ import kr.moonwalk.moonwalk_api.domain.ProjectModule;
 import kr.moonwalk.moonwalk_api.domain.User;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceUpdateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleDetailResponseDto;
@@ -19,9 +21,11 @@ import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleSearchResultDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.ProjectPriceResponseDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.CartNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.ProjectModuleNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ProjectNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.EstimateRepository;
 import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
@@ -206,20 +210,65 @@ public class ProjectService {
         Category subCategory = module.getCategory();
         Category mainCategory = subCategory.getParentCategory();
 
-        return new MyModuleDetailResponseDto(
-            myModuleId,
-            projectId,
-            module.getId(),
-            mainCategory != null ? mainCategory.getName() : null,
-            subCategory.getName(),
-            module.getName(),
-            module.getCapacity(),
-            module.getSerialNumber(),
-            module.getIsoImage().getImageUrl(),
-            module.getSize(),
-            module.getMaterial(),
-            myModule.getQuantity(),
-            module.getPrice()
-        );
+        return new MyModuleDetailResponseDto(myModuleId, projectId, module.getId(),
+            mainCategory != null ? mainCategory.getName() : null, subCategory.getName(),
+            module.getName(), module.getCapacity(), module.getSerialNumber(),
+            module.getIsoImage().getImageUrl(), module.getSize(), module.getMaterial(),
+            myModule.getQuantity(), module.getPrice());
+    }
+
+    public ModulePlaceUpdateResponseDto updatePlaceModule(Long projectId, Long moduleId,
+        ModulePlaceDto modulePlaceDto) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        Module module = moduleRepository.findById(moduleId)
+            .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
+
+        ProjectModule projectModule = projectModuleRepository.findByProjectAndModule(project,
+            module).orElseThrow(() -> new ProjectModuleNotFoundException("배치된 모듈을 찾을 수 없습니다."));
+
+        projectModule.updatePosition(modulePlaceDto.getPositionX(), modulePlaceDto.getPositionY(),
+            modulePlaceDto.getAngle());
+
+        projectModuleRepository.save(projectModule);
+
+        return new ModulePlaceUpdateResponseDto(projectId, moduleId, projectModule.getPositionX(),
+            projectModule.getPositionY(), projectModule.getAngle());
+    }
+
+    public ProjectPriceResponseDto getProjectPriceDetails(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        int placedTotalPrice = project.getPlacedTotalPrice();
+        int estimatedTotalPrice = project.getEstimatedTotalPrice();
+
+        List<Object[]> queryResults = projectModuleRepository.findCategoryPriceDetailsByProjectId(
+            projectId);
+
+        Map<String, List<Object[]>> groupedByCategory = queryResults.stream()
+            .collect(Collectors.groupingBy(row -> (String) row[0]));
+
+        List<ProjectPriceResponseDto.CategoryPriceResponseDto> categoryPriceList = groupedByCategory.entrySet()
+            .stream().map(entry -> {
+                String categoryName = entry.getKey();
+                List<Object[]> modules = entry.getValue();
+
+                List<ProjectPriceResponseDto.CategoryPriceResponseDto.ModuleDetail> moduleDetails = modules.stream()
+                    .map(row -> new ProjectPriceResponseDto.CategoryPriceResponseDto.ModuleDetail(
+                        (String) row[1], ((Number) row[2]).intValue())).toList();
+
+                int categoryTotalPrice = modules.stream()
+                    .mapToInt(row -> ((Number) row[2]).intValue()).sum();
+
+                int moduleCount = modules.size();
+
+                return new ProjectPriceResponseDto.CategoryPriceResponseDto(categoryName,
+                    categoryTotalPrice, moduleCount, moduleDetails);
+            }).toList();
+
+        return new ProjectPriceResponseDto(placedTotalPrice, estimatedTotalPrice,
+            categoryPriceList);
     }
 }
