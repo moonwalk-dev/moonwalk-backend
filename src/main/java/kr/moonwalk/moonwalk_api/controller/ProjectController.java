@@ -7,6 +7,7 @@ import java.util.List;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceUpdateResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.ModulePositionListDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleDetailResponseDto;
@@ -48,7 +49,8 @@ public class ProjectController {
         @RequestPart(value = "mainImage", required = false) MultipartFile mainImage,
         @RequestPart(value = "blueprintImage", required = false) MultipartFile blueprintImage) {
 
-        ProjectCreateResponseDto response = projectService.createProject(projectCreateDto, mainImage, blueprintImage);
+        ProjectCreateResponseDto response = projectService.createProject(projectCreateDto,
+            mainImage, blueprintImage);
 
         return ResponseEntity.ok(response);
     }
@@ -135,7 +137,8 @@ public class ProjectController {
         @RequestPart("projectSaveDto") ProjectSaveDto projectSaveDto,
         @RequestPart(value = "coverImage", required = false) @Parameter(description = "Cover image file") MultipartFile coverImageFile) {
 
-        ProjectSaveResponseDto response = projectService.save(projectId, projectSaveDto, coverImageFile);
+        ProjectSaveResponseDto response = projectService.save(projectId, projectSaveDto,
+            coverImageFile);
 
         return ResponseEntity.ok(response);
     }
@@ -143,16 +146,37 @@ public class ProjectController {
     @Operation(summary = "프로젝트 삭제")
     @DeleteMapping("/{projectId}")
     public ResponseEntity<Void> deleteCart(@PathVariable Long projectId) {
+
         projectService.deleteProject(projectId);
+
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "프로젝트 도면 추가 및 삭제")
+    @Operation(summary = "프로젝트 도면 추가 및 변경")
     @PostMapping(path = "/{projectId}/blueprint", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectBlueprintResponseDto> addBlueprint(@PathVariable Long projectId,
         @RequestPart(value = "blueprintImage") @Parameter(description = "Cover image file") MultipartFile blueprintImageFile) {
 
-        ProjectBlueprintResponseDto response = projectService.addOrUpdateBlueprint(projectId, blueprintImageFile);
+        ProjectBlueprintResponseDto response = projectService.addOrUpdateBlueprint(projectId,
+            blueprintImageFile);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "프로젝트 도면 삭제")
+    @DeleteMapping(path = "/{projectId}/blueprint")
+    public ResponseEntity<Void> deleteBlueprint(@PathVariable Long projectId) {
+
+        projectService.deleteBlueprint(projectId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "프로젝트 모듈 포지션 리스트 조회")
+    @GetMapping("/{projectId}/boards/")
+    public ResponseEntity<ModulePositionListDto> getModulePositions(@PathVariable Long projectId) {
+
+        ModulePositionListDto response = projectService.getModulePositions(projectId);
 
         return ResponseEntity.ok(response);
     }

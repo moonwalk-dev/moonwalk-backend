@@ -14,6 +14,8 @@ import kr.moonwalk.moonwalk_api.domain.User;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceUpdateResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.ModulePositionDto;
+import kr.moonwalk.moonwalk_api.dto.project.ModulePositionListDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleDetailResponseDto;
@@ -349,4 +351,36 @@ public class ProjectService {
 
         return new ProjectBlueprintResponseDto(projectId, project.getBlueprintImage().getImageUrl());
     }
+
+    @Transactional
+    public void deleteBlueprint(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        if (project.getBlueprintImage() != null) {
+
+            Image image = project.getBlueprintImage();
+            imageService.deleteImage(image);
+
+            project.setBlueprintImage(null);
+            projectRepository.save(project);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public ModulePositionListDto getModulePositions(Long projectId) {
+
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        List<ModulePositionDto> modulePositions = project.getProjectModules().stream()
+            .map(projectModule -> new ModulePositionDto(
+                projectModule.getModule().getTopImage().getImageUrl(), projectModule.getPositionX(),
+                projectModule.getPositionY(), projectModule.getAngle()))
+            .collect(Collectors.toList());
+
+        return new ModulePositionListDto(modulePositions);
+    }
+
+
 }
