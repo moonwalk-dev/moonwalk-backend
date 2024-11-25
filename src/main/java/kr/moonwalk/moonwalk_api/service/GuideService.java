@@ -38,7 +38,7 @@ public class GuideService {
             guideDtos = guideRepository.findByCategory(category).stream().map(
                 guide -> new CategoryGuideDto(guide.getId(), guide.getName(),
                     guide.getCoverImage() != null ? guide.getCoverImage().getImageUrl()
-                        : "default-image-url")).collect(Collectors.toList());
+                        : null)).collect(Collectors.toList());
 
         }
 

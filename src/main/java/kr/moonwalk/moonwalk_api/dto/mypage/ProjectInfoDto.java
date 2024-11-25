@@ -1,4 +1,4 @@
-package kr.moonwalk.moonwalk_api.dto.project;
+package kr.moonwalk.moonwalk_api.dto.mypage;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;

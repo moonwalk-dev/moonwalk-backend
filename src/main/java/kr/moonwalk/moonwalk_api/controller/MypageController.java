@@ -1,7 +1,8 @@
 package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import kr.moonwalk.moonwalk_api.dto.project.ProjectInfoListDto;
+import kr.moonwalk.moonwalk_api.dto.mypage.EstimateInfoListDto;
+import kr.moonwalk.moonwalk_api.dto.mypage.ProjectInfoListDto;
 import kr.moonwalk.moonwalk_api.service.MypageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,18 @@ public class MypageController {
 
     @Operation(summary = "마이페이지 프로젝트 리스트 조회")
     @GetMapping("/projects")
-    public ResponseEntity<ProjectInfoListDto> getModulePositions() {
+    public ResponseEntity<ProjectInfoListDto> getProjects() {
 
         ProjectInfoListDto response = mypageService.getProjects();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "마이페이지 견적 리스트 조회")
+    @GetMapping("/estimates")
+    public ResponseEntity<EstimateInfoListDto> getEstimates() {
+
+        EstimateInfoListDto response = mypageService.getEstimates();
 
         return ResponseEntity.ok(response);
     }

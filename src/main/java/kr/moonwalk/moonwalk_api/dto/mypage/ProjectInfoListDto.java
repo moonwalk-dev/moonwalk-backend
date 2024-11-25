@@ -1,4 +1,4 @@
-package kr.moonwalk.moonwalk_api.dto.project;
+package kr.moonwalk.moonwalk_api.dto.mypage;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

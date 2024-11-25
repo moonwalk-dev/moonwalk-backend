@@ -43,7 +43,7 @@ public class ModuleService {
                     module.getName(),
                     module.getCapacity(),
                     module.getSerialNumber(),
-                    module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : "default-image-url"
+                    module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null
                 ))
                 .collect(Collectors.toList());
 
@@ -76,7 +76,7 @@ public class ModuleService {
                 module.getName(),
                 module.getCapacity(),
                 module.getSerialNumber(),
-                module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : "default-image-url"
+                module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null
             ))
             .collect(Collectors.toList());
 

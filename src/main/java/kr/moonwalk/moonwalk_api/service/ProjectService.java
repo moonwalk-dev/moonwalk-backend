@@ -143,7 +143,7 @@ public class ProjectService {
                     myModule.getModule().getId(), myModule.getModule().getName(),
                     myModule.getModule().getCapacity(), myModule.getModule().getSerialNumber(),
                     myModule.getModule().getIsoImage() != null ? myModule.getModule().getIsoImage()
-                        .getImageUrl() : "default-image-url", myModule.getQuantity()))
+                        .getImageUrl() : null, myModule.getQuantity()))
             .collect(Collectors.toList());
 
         return new MyModuleSearchResultDto(project.getId(), query, myModuleDtos);
