@@ -1,4 +1,4 @@
-package kr.moonwalk.moonwalk_api.dto.estimate;
+package kr.moonwalk.moonwalk_api.dto.project;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
@@ -7,21 +7,22 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class EstimateResponseDto {
+public class ProjectInfoDto {
 
     private Long id;
 
-    private Long moodId;
-
-    private String moodName;
-
-    private String coverImage;
-
-    private int totalPrice;
-
     private String title;
+
+    private String client;
+
+    private String area;
+
+    private int estimatedTotalPrice;
+
+    private int placedTotalPrice;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
+    private String coverImageUrl;
 }

@@ -39,10 +39,6 @@ public class Project {
     private String area;
     private LocalDateTime createdAt;
 
-    @OneToOne
-    @JoinColumn(name = "mood_id")
-    private Mood mood;
-
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;

@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ModulePositionListDto {
+public class ProjectInfoListDto {
 
-    private List<ModulePositionDto> modulePositions;
+    private List<ProjectInfoDto> projects;
 }
