@@ -57,6 +57,22 @@ public class Project {
     @JoinColumn(name = "blueprint_image_id")
     private Image blueprintImage;
 
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "cover_image_id")
+    private Image coverImage;
+
+    public Project(User user, String title, String client, String area) {
+
+        this.createdAt = LocalDateTime.now();
+        this.user = user;
+        user.getProjects().add(this);
+
+        this.title = title;
+        this.client = client;
+        this.area = area;
+        this.placedTotalPrice = 0;
+    }
+
     public Project(Estimate estimate, User user) {
 
         this.createdAt = LocalDateTime.now();
@@ -88,4 +104,15 @@ public class Project {
             .mapToInt(myModule -> myModule.getModule().getPrice() * myModule.getUsedQuantity())
             .sum();
     }
+
+    public void save(String title, String client, String area) {
+        this.title = title;
+        this.client = client;
+        this.area = area;
+    }
+
+    public void setCoverImage(Image coverImage) {
+        this.coverImage = coverImage;
+    }
+
 }

@@ -20,8 +20,11 @@ import kr.moonwalk.moonwalk_api.dto.project.MyModuleDetailResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleSearchResultDto;
+import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectPriceResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.ProjectSaveDto;
+import kr.moonwalk.moonwalk_api.dto.project.ProjectSaveResponseDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.CartNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
@@ -54,15 +57,19 @@ public class ProjectService {
     private final ProjectModuleRepository projectModuleRepository;
 
     @Transactional
-    public ProjectCreateResponseDto createProject(Long estimateId,
+    public ProjectCreateResponseDto createProject(ProjectCreateDto projectCreateDto, MultipartFile coverImageFile,
         MultipartFile blueprintImageFile) {
 
         User user = getCurrentAuthenticatedUser();
+        Project project;
 
-        Estimate estimate = estimateRepository.findById(estimateId)
-            .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
-
-        Project project = new Project(estimate, user);
+        if (projectCreateDto.getEstimateId() == null) {
+            project = new Project(user, projectCreateDto.getTitle(), projectCreateDto.getClient(), projectCreateDto.getArea());
+        } else {
+            Estimate estimate = estimateRepository.findById(projectCreateDto.getEstimateId())
+                .orElseThrow(() -> new EstimateNotFoundException("해당 견적을 찾을 수 없습니다."));
+            project = new Project(estimate, user);
+        }
 
         if (blueprintImageFile != null) {
             String blueprintExtension = getFileExtension(blueprintImageFile.getOriginalFilename());
@@ -72,6 +79,15 @@ public class ProjectService {
             Image blueprintImage = imageService.uploadAndSaveImage(blueprintImageFile,
                 blueprintImagePath);
             project.setBlueprintImage(blueprintImage);
+        }
+        if (coverImageFile != null) {
+            String coverExtension = getFileExtension(coverImageFile.getOriginalFilename());
+            String coverImagePath =
+                user.getEmail() + "/projects/" + project.getTitle() + "/cover."
+                    + coverExtension;
+            Image coverImage = imageService.uploadAndSaveImage(coverImageFile,
+                coverImagePath);
+            project.setCoverImage(coverImage);
         }
         Project savedProject = projectRepository.save(project);
 
@@ -170,6 +186,7 @@ public class ProjectService {
         myModuleRepository.delete(myModule);
     }
 
+    @Transactional
     public ModulePlaceResponseDto placeModule(Long projectId, Long moduleId,
         ModulePlaceDto modulePlaceDto) {
 
@@ -201,6 +218,7 @@ public class ProjectService {
             modulePlaceDto.getPositionY(), modulePlaceDto.getAngle());
     }
 
+    @Transactional(readOnly = true)
     public MyModuleDetailResponseDto getInfoMyModule(Long projectId, Long myModuleId) {
         MyModule myModule = myModuleRepository.findById(myModuleId)
             .orElseThrow(() -> new CartNotFoundException("해당 항목을 찾을 수 없습니다."));
@@ -217,6 +235,7 @@ public class ProjectService {
             myModule.getQuantity(), module.getPrice());
     }
 
+    @Transactional
     public ModulePlaceUpdateResponseDto updatePlaceModule(Long projectId, Long moduleId,
         ModulePlaceDto modulePlaceDto) {
         Project project = projectRepository.findById(projectId)
@@ -237,6 +256,7 @@ public class ProjectService {
             projectModule.getPositionY(), projectModule.getAngle());
     }
 
+    @Transactional(readOnly = true)
     public ProjectPriceResponseDto getProjectPriceDetails(Long projectId) {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
@@ -270,5 +290,31 @@ public class ProjectService {
 
         return new ProjectPriceResponseDto(placedTotalPrice, estimatedTotalPrice,
             categoryPriceList);
+    }
+
+
+    @Transactional
+    public ProjectSaveResponseDto save(Long projectId, ProjectSaveDto projectSaveDto,
+        MultipartFile coverImageFile) {
+
+        User user = getCurrentAuthenticatedUser();
+
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        project.save(projectSaveDto.getTitle(), projectSaveDto.getClient(),
+            projectSaveDto.getArea());
+
+        if (coverImageFile != null) {
+            String coverExtension = getFileExtension(coverImageFile.getOriginalFilename());
+            String coverImagePath =
+                user.getEmail() + "/projects/" + project.getTitle() + "/cover."
+                    + coverExtension;
+            Image coverImage = imageService.uploadAndSaveImage(coverImageFile,
+                coverImagePath);
+            project.setCoverImage(coverImage);
+        }
+        Project savedProject = projectRepository.save(project);
+        return new ProjectSaveResponseDto(savedProject.getId());
     }
 }

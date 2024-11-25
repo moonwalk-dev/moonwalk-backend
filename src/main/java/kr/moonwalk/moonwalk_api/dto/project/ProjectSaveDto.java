@@ -5,9 +5,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ProjectCreateDto {
+public class ProjectSaveDto {
 
-    private Long estimateId;
     private String title;
     private String client;
     private String area;

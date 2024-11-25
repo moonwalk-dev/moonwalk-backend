@@ -1,6 +1,7 @@
 package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import java.util.List;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceDto;
@@ -11,8 +12,11 @@ import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleDetailResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleSearchResultDto;
+import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectPriceResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.ProjectSaveDto;
+import kr.moonwalk.moonwalk_api.dto.project.ProjectSaveResponseDto;
 import kr.moonwalk.moonwalk_api.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -36,17 +40,18 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    @Operation(summary = "프로젝트 생성")
+    @Operation(summary = "프로젝트 생성", description = "마이페이지에서 생성할 땐 견적 id가 필요 없고, 피그마(모듈 선택하기-견적 확인하기_모듈 클릭/마우스 오버 시)에서 생성 시 견적 id 필요")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectCreateResponseDto> createProject(
-        @RequestParam("estimateId") Long estimateId,
+        @RequestPart("projectCreateDto") ProjectCreateDto projectCreateDto,
+        @RequestPart(value = "mainImage", required = false) MultipartFile mainImage,
         @RequestPart(value = "blueprintImage", required = false) MultipartFile blueprintImage) {
 
-        ProjectCreateResponseDto response = projectService.createProject(estimateId,
-            blueprintImage);
+        ProjectCreateResponseDto response = projectService.createProject(projectCreateDto, mainImage, blueprintImage);
 
         return ResponseEntity.ok(response);
     }
+
 
     @Operation(summary = "카테고리 별 마이모듈 리스트 조회", description = "프로젝트 ID를 경로로 받고, 선택된 카테고리 ID들로 마이모듈 리스트를 필터링합니다.")
     @GetMapping("/{projectId}/myModules")
@@ -68,7 +73,7 @@ public class ProjectController {
     }
 
     @Operation(summary = "마이 모듈 추가 및 수정", description = "마이 모듈에 없으면 새로운 모듈을 추가하며, 이미 존재하는 경우 모듈의 수량을 업데이트합니다.")
-    @PostMapping("/{projectId}")
+    @PostMapping("/{projectId}/myModules")
     public ResponseEntity<MyModuleAddResponseDto> addModule(@PathVariable Long projectId,
         @Valid @RequestBody MyModuleAddDto myModuleAddDto) {
 
@@ -120,6 +125,17 @@ public class ProjectController {
     @GetMapping("/{projectId}/category-prices")
     public ResponseEntity<ProjectPriceResponseDto> getCategoryPrices(@PathVariable Long projectId) {
         ProjectPriceResponseDto response = projectService.getProjectPriceDetails(projectId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "프로젝트 저장")
+    @PostMapping(path = "/{projectId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectSaveResponseDto> save(@PathVariable Long projectId,
+        @RequestPart("projectSaveDto") ProjectSaveDto projectSaveDto,
+        @RequestPart(value = "coverImage", required = false) @Parameter(description = "Cover image file") MultipartFile coverImageFile) {
+
+        ProjectSaveResponseDto response = projectService.save(projectId, projectSaveDto, coverImageFile);
+
         return ResponseEntity.ok(response);
     }
 }
