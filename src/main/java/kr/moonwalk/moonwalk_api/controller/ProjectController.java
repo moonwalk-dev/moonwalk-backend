@@ -12,6 +12,7 @@ import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleDetailResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleSearchResultDto;
+import kr.moonwalk.moonwalk_api.dto.project.ProjectBlueprintResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectPriceResponseDto;
@@ -40,7 +41,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    @Operation(summary = "프로젝트 생성", description = "마이페이지에서 생성할 땐 견적 id가 필요 없고, 피그마(모듈 선택하기-견적 확인하기_모듈 클릭/마우스 오버 시)에서 생성 시 견적 id 필요")
+    @Operation(summary = "프로젝트 생성", description = "마이페이지에서 생성할 땐 견적 id가 필요 없고, 피그마(모듈 선택하기-견적 확인하기_모듈 클릭/마우스 오버 시)에서 생성 시 견적 id만 필요")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectCreateResponseDto> createProject(
         @RequestPart("projectCreateDto") ProjectCreateDto projectCreateDto,
@@ -135,6 +136,23 @@ public class ProjectController {
         @RequestPart(value = "coverImage", required = false) @Parameter(description = "Cover image file") MultipartFile coverImageFile) {
 
         ProjectSaveResponseDto response = projectService.save(projectId, projectSaveDto, coverImageFile);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "프로젝트 삭제")
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<Void> deleteCart(@PathVariable Long projectId) {
+        projectService.deleteProject(projectId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "프로젝트 도면 추가 및 삭제")
+    @PostMapping(path = "/{projectId}/blueprint", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectBlueprintResponseDto> addBlueprint(@PathVariable Long projectId,
+        @RequestPart(value = "blueprintImage") @Parameter(description = "Cover image file") MultipartFile blueprintImageFile) {
+
+        ProjectBlueprintResponseDto response = projectService.addOrUpdateBlueprint(projectId, blueprintImageFile);
 
         return ResponseEntity.ok(response);
     }

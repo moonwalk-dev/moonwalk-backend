@@ -25,13 +25,40 @@ public class ImageService {
         try {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
+            metadata.setContentType(file.getContentType());
 
             amazonS3.putObject(new PutObjectRequest(bucketName, filePath, file.getInputStream(), metadata));
             String imageUrl = amazonS3.getUrl(bucketName, filePath).toString();
+
             Image image = new Image(imageUrl);
             return imageRepository.save(image);
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload image to S3", e);
         }
     }
+
+    public void deleteImage(Image image) {
+        try {
+            String filePath = extractFilePathFromUrl(image.getImageUrl());
+            amazonS3.deleteObject(bucketName, filePath);
+
+            imageRepository.delete(image);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete image from S3", e);
+        }
+    }
+
+    public Image updateImage(MultipartFile file, String filePath, Image existingImage) {
+        if (existingImage != null) {
+            deleteImage(existingImage);
+        }
+
+        return uploadAndSaveImage(file, filePath);
+    }
+
+    private String extractFilePathFromUrl(String imageUrl) {
+        String baseUrl = "https://" + bucketName + ".s3.amazonaws.com/";
+        return imageUrl.replace(baseUrl, "");
+    }
+
 }

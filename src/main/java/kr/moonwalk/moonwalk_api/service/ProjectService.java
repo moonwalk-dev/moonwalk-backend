@@ -20,6 +20,7 @@ import kr.moonwalk.moonwalk_api.dto.project.MyModuleDetailResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleSearchResultDto;
+import kr.moonwalk.moonwalk_api.dto.project.ProjectBlueprintResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectPriceResponseDto;
@@ -316,5 +317,36 @@ public class ProjectService {
         }
         Project savedProject = projectRepository.save(project);
         return new ProjectSaveResponseDto(savedProject.getId());
+    }
+
+    @Transactional
+    public void deleteProject(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = getCurrentAuthenticatedUser();
+        user.getProjects().remove(project);
+
+        projectRepository.delete(project);
+    }
+
+    @Transactional
+    public ProjectBlueprintResponseDto addOrUpdateBlueprint(Long projectId, MultipartFile blueprintImageFile) {
+
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = getCurrentAuthenticatedUser();
+
+        String blueprintExtension = getFileExtension(blueprintImageFile.getOriginalFilename());
+        String blueprintImagePath =
+            user.getEmail() + "/projects/" + project.getTitle() + "/blueprint." + blueprintExtension;
+
+        Image blueprintImage = imageService.updateImage(blueprintImageFile, blueprintImagePath, project.getBlueprintImage());
+        project.setBlueprintImage(blueprintImage);
+
+        projectRepository.save(project);
+
+        return new ProjectBlueprintResponseDto(projectId, project.getBlueprintImage().getImageUrl());
     }
 }
