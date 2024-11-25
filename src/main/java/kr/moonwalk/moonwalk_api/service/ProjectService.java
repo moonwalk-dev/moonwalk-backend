@@ -383,4 +383,14 @@ public class ProjectService {
     }
 
 
+    public ProjectBlueprintResponseDto getBlueprintUrl(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        Image image = project.getBlueprintImage();
+        if (image == null)
+            throw new ProjectNotFoundException("도면 이미지가 존재하지 않습니다.");
+
+        return new ProjectBlueprintResponseDto(projectId, image.getImageUrl());
+    }
 }

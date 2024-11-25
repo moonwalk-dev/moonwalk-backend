@@ -180,4 +180,13 @@ public class ProjectController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "프로젝트 도면 이미지 조회")
+    @GetMapping("/{projectId}/blueprint/")
+    public ResponseEntity<ProjectBlueprintResponseDto> getBlueprintUrl(@PathVariable Long projectId) {
+
+        ProjectBlueprintResponseDto response = projectService.getBlueprintUrl(projectId);
+
+        return ResponseEntity.ok(response);
+    }
 }
