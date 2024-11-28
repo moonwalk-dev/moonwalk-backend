@@ -8,9 +8,11 @@ import kr.moonwalk.moonwalk_api.domain.Guide;
 import kr.moonwalk.moonwalk_api.domain.Image;
 import kr.moonwalk.moonwalk_api.dto.guide.CategoryGuideDto;
 import kr.moonwalk.moonwalk_api.dto.guide.CategoryGuidesResponseDto;
+import kr.moonwalk.moonwalk_api.dto.guide.GuideResponseDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveResponseDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.MoodNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.GuideRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +52,7 @@ public class GuideService {
         List<MultipartFile> detailImageFiles) {
 
         if (guideRepository.existsByName(saveDto.getName())) {
-            throw new IllegalStateException("이미 존재하는 가이드 명입니다.");
+            throw new IllegalStateException("이미 존재하는 오피스가이드 명입니다.");
         }
 
         Category category = categoryRepository.findById(saveDto.getCategoryId())
@@ -86,5 +88,26 @@ public class GuideService {
             return fileName.substring(fileName.lastIndexOf(".") + 1);
         }
         return "";
+    }
+
+    @Transactional(readOnly = true)
+    public GuideResponseDto getInfo(Long guideId) {
+        Guide guide = guideRepository.findById(guideId)
+            .orElseThrow(() -> new MoodNotFoundException("오피스가이드를 찾을 수 없습니다."));
+
+        String coverImageUrl = (guide.getCoverImage() != null) ? guide.getCoverImage().getImageUrl() : null;
+
+        List<String> detailImageUrls = guide.getDetailImages().stream()
+            .map(Image::getImageUrl)
+            .collect(Collectors.toList());
+
+        return new GuideResponseDto(
+            guide.getId(),
+            guide.getName(),
+            guide.getDescription(),
+            guide.getKeywords(),
+            coverImageUrl,
+            detailImageUrls
+        );
     }
 }
