@@ -5,6 +5,8 @@ import static jakarta.persistence.FetchType.LAZY;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,15 +37,23 @@ public class Category {
     @JoinColumn(name = "parent_id")
     private Category parentCategory;
 
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
+    public enum Type {
+        TYPE_OFFICE, TYPE_MODULE
+    }
+
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> subCategories = new ArrayList<>();
 
-    public Category(String name, Category parentCategory) {
+    public Category(String name, Category parentCategory, Type type) {
         this.name = name;
         if (parentCategory != null) {
             parentCategory.addSubCategory(this);
         }
         this.parentCategory = parentCategory;
+        this.type = type;
     }
 
     public void updateName(String name) {

@@ -2,6 +2,7 @@ package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import kr.moonwalk.moonwalk_api.domain.Category.Type;
 import kr.moonwalk.moonwalk_api.dto.category.CategoryListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySaveDto;
 import kr.moonwalk.moonwalk_api.dto.category.CategorySaveResponseDto;
@@ -24,25 +25,43 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @Operation(summary = "카테고리 생성")
-    @PostMapping
-    public ResponseEntity<CategorySaveResponseDto> create(@Valid @RequestBody CategorySaveDto categorySaveDto) {
+    @Operation(summary = "오피스가이드 카테고리 생성")
+    @PostMapping("/office-guide")
+    public ResponseEntity<CategorySaveResponseDto> createOfficeCategory(@Valid @RequestBody CategorySaveDto categorySaveDto) {
 
-        CategorySaveResponseDto response = categoryService.create(categorySaveDto);
-
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "모든 카테고리 리스트 조회")
-    @GetMapping
-    public ResponseEntity<CategoryListResponseDto> getAllCategories() {
-
-        CategoryListResponseDto response = categoryService.getAllCategories();
+        CategorySaveResponseDto response = categoryService.create(categorySaveDto, Type.TYPE_OFFICE);
 
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "카테고리 수정")
+    @Operation(summary = "모듈 카테고리 생성")
+    @PostMapping("/module-select")
+    public ResponseEntity<CategorySaveResponseDto> createModuleCategory(@Valid @RequestBody CategorySaveDto categorySaveDto) {
+
+        CategorySaveResponseDto response = categoryService.create(categorySaveDto, Type.TYPE_MODULE);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "오피스가이드 카테고리 리스트 조회")
+    @GetMapping("/office-guide")
+    public ResponseEntity<CategoryListResponseDto> getOfficeGuideCategories() {
+
+        CategoryListResponseDto response = categoryService.getOfficeGuideCategories();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "모듈선택 카테고리 리스트 조회")
+    @GetMapping("/module-select")
+    public ResponseEntity<CategoryListResponseDto> getModuleCategories() {
+
+        CategoryListResponseDto response = categoryService.getModuleCategories();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "카테고리 이름 수정")
     @PatchMapping("/{categoryId}")
     public ResponseEntity<CategorySaveResponseDto> update(@PathVariable Long categoryId,
         @Valid @RequestBody CategoryUpdateDto updateDto) {
