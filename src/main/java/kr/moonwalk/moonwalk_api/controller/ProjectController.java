@@ -212,6 +212,7 @@ public class ProjectController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "프로젝트 모듈 배치 다시 실행")
     @PostMapping("/{projectId}/redo")
     public ResponseEntity<UndoPlaceResponseDto> redo(@PathVariable Long projectId) {
         UndoPlaceResponseDto response = placementHistoryService.redoLastPlacement(projectId);
