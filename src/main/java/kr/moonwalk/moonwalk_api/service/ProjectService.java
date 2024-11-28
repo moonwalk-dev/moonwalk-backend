@@ -186,6 +186,11 @@ public class ProjectService {
         MyModule myModule = myModuleRepository.findById(myModuleId)
             .orElseThrow(() -> new CartNotFoundException("해당 항목을 찾을 수 없습니다."));
 
+
+        placementHistoryService.deleteByProjectAndModule(project, myModule.getModule());
+        projectModuleRepository.deleteByProjectAndModule(project, myModule.getModule());
+
+
         project.getMyModules().remove(myModule);
         myModuleRepository.delete(myModule);
     }
@@ -220,7 +225,7 @@ public class ProjectService {
         project.updatePlacedTotalPrice();
         projectRepository.save(project);
 
-        placementHistoryService.saveHistory(projectId, moduleId, projectModule.getId(), "ADD",
+        placementHistoryService.saveHistory(project, module, projectModule, "ADD",
             modulePlaceDto.getPositionX(), modulePlaceDto.getPositionY(), modulePlaceDto.getAngle());
 
         return new ModulePlaceResponseDto(myModule.getId(), projectModule.getId(),
@@ -252,7 +257,7 @@ public class ProjectService {
         ProjectModule projectModule = projectModuleRepository.findById(projectModuleId).orElseThrow(() -> new ProjectModuleNotFoundException("배치된 모듈을 찾을 수 없습니다."));
         Long moduleId = projectModule.getModule().getId();
 
-        placementHistoryService.saveHistory(projectId, moduleId, projectModuleId, "UPDATE",
+        placementHistoryService.saveHistory(projectModule.getProject(), projectModule.getModule(), projectModule, "UPDATE",
             projectModule.getPositionX(), projectModule.getPositionY(), projectModule.getAngle());
 
         projectModule.updatePosition(modulePlaceDto.getPositionX(), modulePlaceDto.getPositionY(),
@@ -280,7 +285,7 @@ public class ProjectService {
         MyModule myModule = myModuleRepository.findByProjectAndModule(project, module)
             .orElseThrow(() -> new CartNotFoundException("해당 항목을 찾을 수 없습니다."));
 
-        placementHistoryService.saveHistory(projectId, module.getId(), projectModuleId, "DELETE",
+        placementHistoryService.saveHistory(project, module, projectModule, "DELETE",
             projectModule.getPositionX(), projectModule.getPositionY(), projectModule.getAngle());
 
         myModule.decrementUsedQuantity();

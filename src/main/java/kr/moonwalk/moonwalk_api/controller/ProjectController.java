@@ -128,11 +128,11 @@ public class ProjectController {
     }
 
     @Operation(summary = "배치된 모듈 삭제")
-    @DeleteMapping("/{projectId}/boards/{projectModuleId}")
+    @DeleteMapping("/{projectId}/boards/{placementId}")
     public ResponseEntity<Void> deletePlaceModule(
-        @PathVariable Long projectId, @PathVariable Long projectModuleId) {
+        @PathVariable Long projectId, @PathVariable Long placementId) {
 
-        projectService.deletePlaceModule(projectId, projectModuleId);
+        projectService.deletePlaceModule(projectId, placementId);
 
         return ResponseEntity.noContent().build();
     }

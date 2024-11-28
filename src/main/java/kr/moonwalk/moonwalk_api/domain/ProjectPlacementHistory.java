@@ -1,10 +1,14 @@
 package kr.moonwalk.moonwalk_api.domain;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -22,9 +26,18 @@ public class ProjectPlacementHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long projectId;
-    private Long moduleId;
-    private Long projectModuleId;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "module_id")
+    private Module module;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "project_module_id")
+    private ProjectModule projectModule;
+
     private int positionX;
     private int positionY;
     private int angle;
@@ -32,10 +45,11 @@ public class ProjectPlacementHistory {
     private String actionType;
     private LocalDateTime timestamp;
 
-    public ProjectPlacementHistory(Long projectId, Long moduleId, Long projectModuleId, int positionX, int positionY, int angle, String actionType) {
-        this.projectId = projectId;
-        this.moduleId = moduleId;
-        this.projectModuleId = projectModuleId;
+    public ProjectPlacementHistory(Project project, Module module, ProjectModule projectModule, int positionX, int positionY, int angle, String actionType) {
+        this.project = project;
+        project.getHistories().add(this);
+        this.module = module;
+        this.projectModule = projectModule;
         this.positionX = positionX;
         this.positionY = positionY;
         this.angle = angle;
