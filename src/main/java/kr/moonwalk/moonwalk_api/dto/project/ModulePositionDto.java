@@ -7,6 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ModulePositionDto {
 
+    private Long projectModuleId;
+
     private String moduleImageUrl;
 
     private int positionX;

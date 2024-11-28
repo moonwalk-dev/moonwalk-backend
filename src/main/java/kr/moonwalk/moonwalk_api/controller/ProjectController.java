@@ -19,6 +19,8 @@ import kr.moonwalk.moonwalk_api.dto.project.ProjectCreateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectPriceResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectSaveDto;
 import kr.moonwalk.moonwalk_api.dto.project.ProjectSaveResponseDto;
+import kr.moonwalk.moonwalk_api.dto.project.UndoPlaceResponseDto;
+import kr.moonwalk.moonwalk_api.service.PlacementHistoryService;
 import kr.moonwalk.moonwalk_api.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -41,6 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final PlacementHistoryService placementHistoryService;
 
     @Operation(summary = "프로젝트 생성", description = "마이페이지에서 생성할 땐 견적 id가 필요 없고, 피그마(모듈 선택하기-견적 확인하기_모듈 클릭/마우스 오버 시)에서 생성 시 견적 id만 필요")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -113,15 +116,25 @@ public class ProjectController {
     }
 
     @Operation(summary = "모듈 배치 수정")
-    @PatchMapping("/{projectId}/boards/{moduleId}")
+    @PatchMapping("/{projectId}/boards/{projectModuleId}")
     public ResponseEntity<ModulePlaceUpdateResponseDto> updatePlaceModule(
-        @PathVariable Long projectId, @PathVariable Long moduleId,
+        @PathVariable Long projectId, @PathVariable Long projectModuleId,
         @Valid @RequestBody ModulePlaceDto modulePlaceDto) {
 
         ModulePlaceUpdateResponseDto response = projectService.updatePlaceModule(projectId,
-            moduleId, modulePlaceDto);
+            projectModuleId, modulePlaceDto);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "배치된 모듈 삭제")
+    @DeleteMapping("/{projectId}/boards/{projectModuleId}")
+    public ResponseEntity<Void> deletePlaceModule(
+        @PathVariable Long projectId, @PathVariable Long projectModuleId) {
+
+        projectService.deletePlaceModule(projectId, projectModuleId);
+
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "프로젝트 총 금액 조회")
@@ -186,6 +199,15 @@ public class ProjectController {
     public ResponseEntity<ProjectBlueprintResponseDto> getBlueprintUrl(@PathVariable Long projectId) {
 
         ProjectBlueprintResponseDto response = projectService.getBlueprintUrl(projectId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "프로젝트 모듈 배치 되돌리기")
+    @PostMapping(path = "/{projectId}/undo")
+    public ResponseEntity<UndoPlaceResponseDto> undo(@PathVariable Long projectId) {
+
+        UndoPlaceResponseDto response = placementHistoryService.undoLastPlacement(projectId);
 
         return ResponseEntity.ok(response);
     }

@@ -58,6 +58,7 @@ public class ProjectService {
     private final MyModuleRepository myModuleRepository;
     private final ModuleRepository moduleRepository;
     private final ProjectModuleRepository projectModuleRepository;
+    private final PlacementHistoryService placementHistoryService;
 
     @Transactional
     public ProjectCreateResponseDto createProject(ProjectCreateDto projectCreateDto, MultipartFile coverImageFile,
@@ -202,10 +203,13 @@ public class ProjectService {
         MyModule myModule = myModuleRepository.findByProjectAndModule(project, module)
             .orElseThrow(() -> new CartNotFoundException("해당 항목을 찾을 수 없습니다."));
 
+
         if (myModule.getQuantity() <= myModule.getUsedQuantity()) {
             throw new IllegalArgumentException("마이 모듈에 있는 수량을 모두 사용하였습니다. 마이 모듈의 수량을 변경해주세요.");
         }
-        myModule.updateUsedQuantity();
+
+        myModule.incrementUsedQuantity();
+        myModuleRepository.save(myModule);
 
         ProjectModule projectModule = ProjectModule.createMyModule(myModule, project,
             modulePlaceDto.getPositionX(), modulePlaceDto.getPositionY(),
@@ -216,8 +220,11 @@ public class ProjectService {
         project.updatePlacedTotalPrice();
         projectRepository.save(project);
 
-        return new ModulePlaceResponseDto(projectId, moduleId, myModule.getId(),
-            myModule.getQuantity(), myModule.getUsedQuantity(), modulePlaceDto.getPositionX(),
+        placementHistoryService.saveHistory(projectId, moduleId, projectModule.getId(), "ADD",
+            modulePlaceDto.getPositionX(), modulePlaceDto.getPositionY(), modulePlaceDto.getAngle());
+
+        return new ModulePlaceResponseDto(myModule.getId(), projectModule.getId(),
+            myModule.getQuantity(), myModule.getUsedQuantity(), module.getTopImage().getImageUrl(), modulePlaceDto.getPositionX(),
             modulePlaceDto.getPositionY(), modulePlaceDto.getAngle());
     }
 
@@ -239,16 +246,14 @@ public class ProjectService {
     }
 
     @Transactional
-    public ModulePlaceUpdateResponseDto updatePlaceModule(Long projectId, Long moduleId,
+    public ModulePlaceUpdateResponseDto updatePlaceModule(Long projectId, Long projectModuleId,
         ModulePlaceDto modulePlaceDto) {
-        Project project = projectRepository.findById(projectId)
-            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
-        Module module = moduleRepository.findById(moduleId)
-            .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
+        ProjectModule projectModule = projectModuleRepository.findById(projectModuleId).orElseThrow(() -> new ProjectModuleNotFoundException("배치된 모듈을 찾을 수 없습니다."));
+        Long moduleId = projectModule.getModule().getId();
 
-        ProjectModule projectModule = projectModuleRepository.findByProjectAndModule(project,
-            module).orElseThrow(() -> new ProjectModuleNotFoundException("배치된 모듈을 찾을 수 없습니다."));
+        placementHistoryService.saveHistory(projectId, moduleId, projectModuleId, "UPDATE",
+            projectModule.getPositionX(), projectModule.getPositionY(), projectModule.getAngle());
 
         projectModule.updatePosition(modulePlaceDto.getPositionX(), modulePlaceDto.getPositionY(),
             modulePlaceDto.getAngle());
@@ -257,6 +262,32 @@ public class ProjectService {
 
         return new ModulePlaceUpdateResponseDto(projectId, moduleId, projectModule.getPositionX(),
             projectModule.getPositionY(), projectModule.getAngle());
+    }
+
+    @Transactional
+    public void deletePlaceModule(Long projectId, Long projectModuleId) {
+
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        ProjectModule projectModule = projectModuleRepository.findById(projectModuleId).orElseThrow(() -> new ProjectModuleNotFoundException("배치된 모듈을 찾을 수 없습니다."));
+
+        if (projectModule.isDeleted())
+            return;
+
+        Module module = projectModule.getModule();
+
+        MyModule myModule = myModuleRepository.findByProjectAndModule(project, module)
+            .orElseThrow(() -> new CartNotFoundException("해당 항목을 찾을 수 없습니다."));
+
+        placementHistoryService.saveHistory(projectId, module.getId(), projectModuleId, "DELETE",
+            projectModule.getPositionX(), projectModule.getPositionY(), projectModule.getAngle());
+
+        myModule.decrementUsedQuantity();
+        myModuleRepository.save(myModule);
+
+        projectModule.markAsDeleted(true);
+        projectModuleRepository.save(projectModule);
     }
 
     @Transactional(readOnly = true)
@@ -374,7 +405,9 @@ public class ProjectService {
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
         List<ModulePositionDto> modulePositions = project.getProjectModules().stream()
+            .filter(projectModule -> !projectModule.isDeleted())
             .map(projectModule -> new ModulePositionDto(
+                projectModule.getId(),
                 projectModule.getModule().getTopImage().getImageUrl(), projectModule.getPositionX(),
                 projectModule.getPositionY(), projectModule.getAngle()))
             .collect(Collectors.toList());

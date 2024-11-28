@@ -57,7 +57,9 @@ public class MyModule {
         this.quantity = quantity;
     }
 
-    public void updateUsedQuantity() {
+    public void incrementUsedQuantity() {
         this.usedQuantity += 1;
     }
+    public void decrementUsedQuantity() { this.usedQuantity -= 1; }
+
 }

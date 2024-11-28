@@ -7,15 +7,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ModulePlaceResponseDto {
 
-    private Long projectId;
-
-    private Long moduleId;
-
     private Long myModuleId;
+
+    private Long projectModuleId;
 
     private int quantity;
 
     private int usedQuantity;
+
+    private String moduleImageUrl;
 
     private int positionX;
 

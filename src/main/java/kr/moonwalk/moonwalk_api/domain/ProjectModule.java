@@ -27,6 +27,8 @@ public class ProjectModule {
     private int positionY;
     private int angle;
 
+    private boolean isDeleted = false;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "module_id")
     private Module module;
@@ -52,5 +54,9 @@ public class ProjectModule {
         this.positionX = positionX;
         this.positionY = positionY;
         this.angle = angle;
+    }
+
+    public void markAsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }
