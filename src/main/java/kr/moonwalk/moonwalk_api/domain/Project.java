@@ -114,4 +114,7 @@ public class Project {
         this.coverImage = coverImage;
     }
 
+    public void addHistory(ProjectPlacementHistory projectPlacementHistory) {
+        this.getHistories().add(projectPlacementHistory);
+    }
 }

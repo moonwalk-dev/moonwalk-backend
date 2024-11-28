@@ -47,7 +47,7 @@ public class ProjectPlacementHistory {
 
     public ProjectPlacementHistory(Project project, Module module, ProjectModule projectModule, int positionX, int positionY, int angle, String actionType) {
         this.project = project;
-        project.getHistories().add(this);
+        project.addHistory(this);
         this.module = module;
         this.projectModule = projectModule;
         this.positionX = positionX;

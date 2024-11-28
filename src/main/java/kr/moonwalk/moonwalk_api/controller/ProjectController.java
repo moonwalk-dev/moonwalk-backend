@@ -88,7 +88,7 @@ public class ProjectController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "마이모듈 항목 삭제", description = "해당 마이모듈 항목을 삭제합니다.")
+    @Operation(summary = "마이모듈 항목 삭제", description = "@@@@@ 마이모듈 삭제 시 배치된 모듈들도 삭제된다고 경고 띄워주면 좋을 것 같습니다.@@@@@")
     @DeleteMapping("/{projectId}/myModules/{myModuleId}")
     public ResponseEntity<Void> deleteMyModule(@PathVariable Long projectId,
         @PathVariable Long myModuleId) {
@@ -209,6 +209,12 @@ public class ProjectController {
 
         UndoPlaceResponseDto response = placementHistoryService.undoLastPlacement(projectId);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{projectId}/redo")
+    public ResponseEntity<UndoPlaceResponseDto> redo(@PathVariable Long projectId) {
+        UndoPlaceResponseDto response = placementHistoryService.redoLastPlacement(projectId);
         return ResponseEntity.ok(response);
     }
 }

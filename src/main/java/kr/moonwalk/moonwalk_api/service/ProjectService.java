@@ -353,6 +353,9 @@ public class ProjectService {
                 coverImagePath);
             project.setCoverImage(coverImage);
         }
+
+        placementHistoryService.clearHistory(projectId);
+
         Project savedProject = projectRepository.save(project);
         return new ProjectSaveResponseDto(savedProject.getId());
     }
