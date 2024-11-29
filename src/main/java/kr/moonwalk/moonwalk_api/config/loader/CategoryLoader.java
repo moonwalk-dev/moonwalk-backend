@@ -42,15 +42,18 @@ public class CategoryLoader implements CommandLineRunner {
             subCategoryList.add(new Category("락커룸", parentCategoryList.get(0), Type.TYPE_MODULE));
             subCategoryList.add(new Category("팬트리", parentCategoryList.get(0), Type.TYPE_MODULE));
             subCategoryList.add(new Category("휴게공간", parentCategoryList.get(0), Type.TYPE_MODULE));
+
             subCategoryList.add(new Category("업무공간", parentCategoryList.get(1), Type.TYPE_MODULE));
             subCategoryList.add(new Category("임원실", parentCategoryList.get(1), Type.TYPE_MODULE));
             subCategoryList.add(new Category("집중업무공간", parentCategoryList.get(1), Type.TYPE_MODULE));
             subCategoryList.add(new Category("OA공간", parentCategoryList.get(1), Type.TYPE_MODULE));
+
             subCategoryList.add(new Category("이미지월", parentCategoryList.get(2), Type.TYPE_MODULE));
             subCategoryList.add(new Category("인포메이션", parentCategoryList.get(2), Type.TYPE_MODULE));
+
             subCategoryList.add(new Category("대회의실", parentCategoryList.get(3), Type.TYPE_MODULE));
-            subCategoryList.add(new Category("소회의실", parentCategoryList.get(3), Type.TYPE_MODULE));
             subCategoryList.add(new Category("중회의실", parentCategoryList.get(3), Type.TYPE_MODULE));
+            subCategoryList.add(new Category("소회의실", parentCategoryList.get(3), Type.TYPE_MODULE));
             subCategoryList.add(new Category("퀵미팅부스", parentCategoryList.get(3), Type.TYPE_MODULE));
 
             for (Category category : subCategoryList) {
