@@ -3,6 +3,7 @@ package kr.moonwalk.moonwalk_api.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Cart;
+import kr.moonwalk.moonwalk_api.domain.Category.Type;
 import kr.moonwalk.moonwalk_api.domain.Estimate;
 import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.domain.Mood;
@@ -19,6 +20,7 @@ import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.MoodNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CartRepository;
+import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.EstimateRepository;
 import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.MoodRepository;
@@ -38,6 +40,7 @@ public class EstimateService {
     private final EstimateRepository estimateRepository;
     private final ModuleRepository moduleRepository;
     private final CartRepository cartRepository;
+    private final CategoryRepository categoryRepository;
     private final MoodRepository moodRepository;
 
     @Transactional
@@ -93,13 +96,16 @@ public class EstimateService {
     }
 
     @Transactional(readOnly = true)
-    public CartListResponseDto getFilteredCarts(Long estimateId, List<Long> categoryIds) {
+    public CartListResponseDto getFilteredCarts(Long estimateId, List<String> categoryNames) {
         Estimate estimate = estimateRepository.findById(estimateId)
             .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
 
+        List<Long> categoryIds = categoryNames != null && !categoryNames.isEmpty()
+            ? categoryRepository.findIdsByNameInAndType(categoryNames, Type.TYPE_MODULE)
+            : null;
+
         List<CartResponseDto> carts = estimate.getCarts().stream()
-            .filter(cart -> categoryIds == null || categoryIds.isEmpty() ||
-                categoryIds.contains(cart.getModule().getCategory().getId()))
+            .filter(cart -> categoryIds == null || categoryIds.contains(cart.getModule().getCategory().getId()))
             .map(cart -> new CartResponseDto(
                 cart.getId(),
                 cart.getEstimate().getId(),
@@ -107,12 +113,13 @@ public class EstimateService {
                 cart.getModule().getName(),
                 cart.getModule().getCapacity(),
                 cart.getModule().getSerialNumber(),
-                cart.getModule().getIsoImage().getImageUrl(),
+                cart.getModule().getIsoImage() != null ? cart.getModule().getIsoImage().getImageUrl() : null,
                 cart.getQuantity()))
             .collect(Collectors.toList());
 
         return new CartListResponseDto(carts);
     }
+
 
     @Transactional
     public EstimateMoodResponseDto setMood(Long estimateId, Long moodId) {

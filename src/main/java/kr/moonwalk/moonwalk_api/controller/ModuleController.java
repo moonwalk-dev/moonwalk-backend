@@ -24,9 +24,9 @@ public class ModuleController {
     @Operation(summary = "카테고리 별 모듈 조회")
     @GetMapping
     public ResponseEntity<CategoriesModulesResponseDto> getModulesByCategories(
-        @RequestParam(required = true) List<Long> categoryIds) {
+        @RequestParam List<String> categoryNames) {
 
-        CategoriesModulesResponseDto response = moduleService.getModulesByCategoryIds(categoryIds);
+        CategoriesModulesResponseDto response = moduleService.getModulesByCategoryNames(categoryNames);
         return ResponseEntity.ok(response);
     }
 

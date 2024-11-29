@@ -47,13 +47,13 @@ public class EstimateController {
     }
 
     @Operation(summary = "카테고리별 장바구니 리스트 조회",
-        description = "견적 ID를 경로로 받고, 선택된 카테고리 ID들로 장바구니를 필터링합니다.")
+        description = "견적 ID를 경로로 받고, 선택된 카테고리 이름들로 장바구니를 필터링합니다.")
     @GetMapping("/{estimateId}/carts")
     public ResponseEntity<CartListResponseDto> getFilteredCarts(
         @PathVariable Long estimateId,
-        @RequestParam(required = false) List<Long> categoryIds) {
+        @RequestParam(required = false) List<String> categoryNames) {
 
-        CartListResponseDto response = estimateService.getFilteredCarts(estimateId, categoryIds);
+        CartListResponseDto response = estimateService.getFilteredCarts(estimateId, categoryNames);
 
         return ResponseEntity.ok(response);
     }

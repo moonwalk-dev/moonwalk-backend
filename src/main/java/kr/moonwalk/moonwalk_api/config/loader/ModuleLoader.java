@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class ModuleLoader implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         if (moduleRepository.count() == 0) {
 

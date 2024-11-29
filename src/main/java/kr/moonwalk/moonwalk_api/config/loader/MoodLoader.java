@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class MoodLoader implements CommandLineRunner {
     private final MoodRepository moodRepository;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         if (moodRepository.count() == 0) {
 

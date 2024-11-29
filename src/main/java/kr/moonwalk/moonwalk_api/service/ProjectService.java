@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Category;
+import kr.moonwalk.moonwalk_api.domain.Category.Type;
 import kr.moonwalk.moonwalk_api.domain.Estimate;
 import kr.moonwalk.moonwalk_api.domain.Image;
 import kr.moonwalk.moonwalk_api.domain.Module;
@@ -33,6 +34,7 @@ import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ProjectModuleNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ProjectNotFoundException;
+import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.EstimateRepository;
 import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.MyModuleRepository;
@@ -59,6 +61,7 @@ public class ProjectService {
     private final ModuleRepository moduleRepository;
     private final ProjectModuleRepository projectModuleRepository;
     private final PlacementHistoryService placementHistoryService;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public ProjectCreateResponseDto createProject(ProjectCreateDto projectCreateDto, MultipartFile coverImageFile,
@@ -115,17 +118,25 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public MyModuleListResponseDto getFilteredMyModules(Long projectId, List<Long> categoryIds) {
+    public MyModuleListResponseDto getFilteredMyModules(Long projectId, List<String> categoryNames) {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
-        List<MyModuleResponseDto> myModules = project.getMyModules().stream().filter(
-                myModule -> categoryIds == null || categoryIds.isEmpty() || categoryIds.contains(
-                    myModule.getModule().getCategory().getId())).map(
-                myModule -> new MyModuleResponseDto(myModule.getId(), myModule.getProject().getId(),
-                    myModule.getModule().getId(), myModule.getModule().getName(),
-                    myModule.getModule().getCapacity(), myModule.getModule().getSerialNumber(),
-                    myModule.getModule().getIsoImage().getImageUrl(), myModule.getQuantity()))
+        List<Long> categoryIds = categoryNames != null && !categoryNames.isEmpty()
+            ? categoryRepository.findIdsByNameInAndType(categoryNames, Type.TYPE_MODULE)
+            : null;
+
+        List<MyModuleResponseDto> myModules = project.getMyModules().stream()
+            .filter(cart -> categoryIds == null || categoryIds.contains(cart.getModule().getCategory().getId()))
+            .map(myModule -> new MyModuleResponseDto(
+                myModule.getId(),
+                myModule.getProject().getId(),
+                myModule.getModule().getId(),
+                myModule.getModule().getName(),
+                myModule.getModule().getCapacity(),
+                myModule.getModule().getSerialNumber(),
+                myModule.getModule().getIsoImage() != null ? myModule.getModule().getIsoImage().getImageUrl() : null,
+                myModule.getQuantity()))
             .collect(Collectors.toList());
 
         return new MyModuleListResponseDto(myModules);

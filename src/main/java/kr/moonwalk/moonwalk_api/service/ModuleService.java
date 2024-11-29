@@ -1,9 +1,9 @@
 package kr.moonwalk.moonwalk_api.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import kr.moonwalk.moonwalk_api.domain.Category;
+import kr.moonwalk.moonwalk_api.domain.Category.Type;
 import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.dto.module.CategoriesModulesResponseDto;
 import kr.moonwalk.moonwalk_api.dto.module.CategoryModuleDto;
@@ -27,31 +27,32 @@ public class ModuleService {
     private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public CategoriesModulesResponseDto getModulesByCategoryIds(List<Long> categoryIds) {
+    public CategoriesModulesResponseDto getModulesByCategoryNames(List<String> categoryNames) {
+        List<Module> modules = moduleRepository.findByCategoryNamesAndType(categoryNames, Type.TYPE_MODULE);
 
-        List<CategoryModulesResponseDto> categoryModules = new ArrayList<>();
-
-        List<Category> categories = categoryRepository.findAllById(categoryIds);
-        if (categories.isEmpty()) {
-            throw new CategoryNotFoundException("카테고리를 찾을 수 없습니다.");
+        if (modules.isEmpty()) {
+            throw new CategoryNotFoundException("해당 카테고리에 모듈이 존재하지 않습니다.");
         }
 
-        for (Category category : categories) {
-            List<CategoryModuleDto> moduleDtos = moduleRepository.findByCategory(category).stream()
-                .map(module -> new CategoryModuleDto(
+        Map<String, List<CategoryModuleDto>> groupedModules = modules.stream()
+            .collect(Collectors.groupingBy(
+                module -> module.getCategory().getName(),
+                Collectors.mapping(module -> new CategoryModuleDto(
                     module.getId(),
                     module.getName(),
                     module.getCapacity(),
                     module.getSerialNumber(),
                     module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null
-                ))
-                .collect(Collectors.toList());
+                ), Collectors.toList())
+            ));
 
-            categoryModules.add(new CategoryModulesResponseDto(category.getName(), moduleDtos));
-        }
+        List<CategoryModulesResponseDto> categoryModules = groupedModules.entrySet().stream()
+            .map(entry -> new CategoryModulesResponseDto(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
 
         return new CategoriesModulesResponseDto(categoryModules);
     }
+
 
     @Transactional(readOnly = true)
     public ModuleResponseDto getInfo(Long moduleId) {

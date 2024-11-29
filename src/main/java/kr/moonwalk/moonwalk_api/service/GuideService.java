@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Category;
+import kr.moonwalk.moonwalk_api.domain.Category.Type;
 import kr.moonwalk.moonwalk_api.domain.Guide;
 import kr.moonwalk.moonwalk_api.domain.Image;
 import kr.moonwalk.moonwalk_api.dto.guide.CategoryGuideDto;
@@ -30,9 +31,9 @@ public class GuideService {
 
 
     @Transactional(readOnly = true)
-    public CategoryGuidesResponseDto getGuidesByCategoryId(Long categoryId) {
+    public CategoryGuidesResponseDto getGuidesByCategoryName(String categoryName) {
 
-        Category category = categoryRepository.findById(categoryId)
+        Category category = categoryRepository.findByNameAndType(categoryName, Type.TYPE_OFFICE)
             .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
 
         List<CategoryGuideDto> guideDtos = null;

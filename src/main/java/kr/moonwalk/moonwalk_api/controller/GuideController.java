@@ -31,11 +31,10 @@ public class GuideController {
     @Operation(summary = "카테고리 별 공간 조회")
     @GetMapping
     public ResponseEntity<CategoryGuidesResponseDto> getGuidesByCategory(
-        @RequestParam(required = true) Long categoryId) {
+        @RequestParam String categoryName) {
 
-        CategoryGuidesResponseDto response = guideService.getGuidesByCategoryId(categoryId);
+        CategoryGuidesResponseDto response = guideService.getGuidesByCategoryName(categoryName);
         return ResponseEntity.ok(response);
-
     }
 
     @Operation(summary = "공간 생성")

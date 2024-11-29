@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class CategoryLoader implements CommandLineRunner {
 
     private final CategoryRepository categoryRepository;
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
 
         if (categoryRepository.count() == 0) {
@@ -32,9 +34,9 @@ public class CategoryLoader implements CommandLineRunner {
             List<Category> parentCategoryList = new ArrayList<>();
             for (String categoryName : moduleCategory) {
                 Category category = new Category(categoryName, null, Type.TYPE_MODULE);
-                categoryRepository.save(category);
                 parentCategoryList.add(category);
             }
+            categoryRepository.saveAll(parentCategoryList);
 
             List<Category> subCategoryList = new ArrayList<>();
 
@@ -56,9 +58,7 @@ public class CategoryLoader implements CommandLineRunner {
             subCategoryList.add(new Category("소회의실", parentCategoryList.get(3), Type.TYPE_MODULE));
             subCategoryList.add(new Category("퀵미팅부스", parentCategoryList.get(3), Type.TYPE_MODULE));
 
-            for (Category category : subCategoryList) {
-                categoryRepository.save(category);
-            }
+            categoryRepository.saveAll(subCategoryList);
         }
     }
 }

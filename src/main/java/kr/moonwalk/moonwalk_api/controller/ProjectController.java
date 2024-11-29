@@ -59,13 +59,13 @@ public class ProjectController {
     }
 
 
-    @Operation(summary = "카테고리 별 마이모듈 리스트 조회", description = "프로젝트 ID를 경로로 받고, 선택된 카테고리 ID들로 마이모듈 리스트를 필터링합니다.")
+    @Operation(summary = "카테고리 별 마이모듈 리스트 조회", description = "프로젝트 ID를 경로로 받고, 선택된 카테고리 이름들로 마이모듈 리스트를 필터링합니다.")
     @GetMapping("/{projectId}/myModules")
     public ResponseEntity<MyModuleListResponseDto> getFilteredMyModules(
-        @PathVariable Long projectId, @RequestParam(required = false) List<Long> categoryIds) {
+        @PathVariable Long projectId, @RequestParam(required = false) List<String> categoryNames) {
 
         MyModuleListResponseDto response = projectService.getFilteredMyModules(projectId,
-            categoryIds);
+            categoryNames);
 
         return ResponseEntity.ok(response);
     }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class GuideLoader implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         if (guideRepository.count() == 0) {
             Category businessSpaceCategory = categoryRepository.findByNameAndType("업무공간", Type.TYPE_OFFICE).orElseThrow();
