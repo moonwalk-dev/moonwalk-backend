@@ -1,11 +1,11 @@
 package kr.moonwalk.moonwalk_api.dto.guide;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
 public class GuideSaveDto {
 
     private String name;
