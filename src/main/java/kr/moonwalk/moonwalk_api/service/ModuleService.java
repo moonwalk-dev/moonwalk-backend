@@ -19,6 +19,7 @@ import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
+import kr.moonwalk.moonwalk_api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,6 +92,7 @@ public class ModuleService {
         return new ModuleSearchResultDto(query, moduleDtos);
     }
 
+    @Transactional
     public ModuleSaveResponseDto saveModule(ModuleSaveDto moduleSaveDto, MultipartFile topImageFile,
         MultipartFile isoImageFile) {
 
@@ -103,13 +105,13 @@ public class ModuleService {
             moduleSaveDto.getCapacity(), category);
 
         if (topImageFile != null) {
-            String topExtension = getFileExtension(topImageFile.getOriginalFilename());
+            String topExtension = FileUtil.getFileExtension(topImageFile.getOriginalFilename());
             String topImagePath = "modules/" + moduleSaveDto.getName() + "/top." + topExtension;
             Image topImage = imageService.uploadAndSaveImage(topImageFile, topImagePath);
             module.setTopImage(topImage);
         }
         if (isoImageFile != null) {
-            String isoExtension = getFileExtension(isoImageFile.getOriginalFilename());
+            String isoExtension = FileUtil.getFileExtension(isoImageFile.getOriginalFilename());
             String isoImagePath = "modules/" + moduleSaveDto.getName() + "/iso." + isoExtension;
             Image isoImage = imageService.uploadAndSaveImage(isoImageFile, isoImagePath);
             module.setIsoImage(isoImage);
@@ -119,13 +121,4 @@ public class ModuleService {
         return new ModuleSaveResponseDto(savedModule.getId(), savedModule.getName(),
             savedModule.getSerialNumber(), savedModule.getCapacity(), category.getId());
     }
-
-    private String getFileExtension(String fileName) {
-        if (fileName != null && fileName.contains(".")) {
-            return fileName.substring(fileName.lastIndexOf(".") + 1);
-        }
-        return "";
-    }
-
-
 }

@@ -15,6 +15,8 @@ import kr.moonwalk.moonwalk_api.dto.estimate.CartResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mood.EstimateMoodResponseDto;
+import kr.moonwalk.moonwalk_api.dto.mypage.EstimateInfoDto;
+import kr.moonwalk.moonwalk_api.dto.mypage.EstimateInfoListDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.CartNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
@@ -24,11 +26,8 @@ import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.EstimateRepository;
 import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.MoodRepository;
-import kr.moonwalk.moonwalk_api.repository.UserRepository;
+import kr.moonwalk.moonwalk_api.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,16 +35,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class EstimateService {
 
-    private final UserRepository userRepository;
     private final EstimateRepository estimateRepository;
     private final ModuleRepository moduleRepository;
     private final CartRepository cartRepository;
     private final CategoryRepository categoryRepository;
     private final MoodRepository moodRepository;
+    private final AuthService authService;
+
 
     @Transactional
     public EstimateCreateDto createEstimate() {
-        User user = getCurrentAuthenticatedUser();
+        User user = authService.getCurrentAuthenticatedUser();
 
         Estimate estimate = new Estimate(user);
         Estimate savedEstimate = estimateRepository.save(estimate);
@@ -73,14 +73,6 @@ public class EstimateService {
         estimateRepository.save(estimate);
 
         return new CartAddResponseDto(module.getId(), module.getName(), estimate.getId(), cart.getQuantity());
-    }
-
-    private User getCurrentAuthenticatedUser() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String userEmail = userDetails.getUsername();
-
-        return userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Transactional
@@ -155,5 +147,19 @@ public class EstimateService {
             estimate.getTitle(),
             estimate.getCreatedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public EstimateInfoListDto getEstimates() {
+
+        User user = authService.getCurrentAuthenticatedUser();
+
+        List<EstimateInfoDto> estimates = user.getEstimates().stream().map(
+                estimate -> new EstimateInfoDto(estimate.getId(), estimate.getTitle(),
+                    estimate.getTotalPrice(), estimate.getCreatedAt(), estimate.getMood() != null ? estimate.getMood().getId()
+                    : null))
+            .collect(Collectors.toList());
+
+        return new EstimateInfoListDto(estimates);
     }
 }

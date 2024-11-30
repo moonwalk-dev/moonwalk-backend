@@ -9,6 +9,7 @@ import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mood.EstimateMoodResponseDto;
+import kr.moonwalk.moonwalk_api.dto.mypage.EstimateInfoListDto;
 import kr.moonwalk.moonwalk_api.service.EstimateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -83,4 +84,12 @@ public class EstimateController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "마이페이지 견적 리스트 조회")
+    @GetMapping
+    public ResponseEntity<EstimateInfoListDto> getEstimates() {
+
+        EstimateInfoListDto response = estimateService.getEstimates();
+
+        return ResponseEntity.ok(response);
+    }
 }

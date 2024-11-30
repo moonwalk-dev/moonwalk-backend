@@ -16,6 +16,7 @@ import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.MoodNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.GuideRepository;
+import kr.moonwalk.moonwalk_api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +63,7 @@ public class GuideService {
         Guide guide = new Guide(saveDto.getName(), saveDto.getDescription(), saveDto.getKeywords(),
             category);
 
-        String coverExtension = getFileExtension(coverImageFile.getOriginalFilename());
+        String coverExtension = FileUtil.getFileExtension(coverImageFile.getOriginalFilename());
         String coverImagePath = "guides/" + guide.getName() + "/cover." + coverExtension;
         Image coverImage = imageService.uploadAndSaveImage(coverImageFile, coverImagePath);
         guide.setCoverImage(coverImage);
@@ -70,7 +71,7 @@ public class GuideService {
         List<Image> detailImages = new ArrayList<>();
         for (int i = 0; i < detailImageFiles.size(); i++) {
             MultipartFile file = detailImageFiles.get(i);
-            String detailExtension = getFileExtension(file.getOriginalFilename());
+            String detailExtension = FileUtil.getFileExtension(file.getOriginalFilename());
             String detailImagePath =
                 "guides/" + guide.getName() + "/detail" + (i + 1) + "." + detailExtension;
             Image detailImage = imageService.uploadAndSaveImage(file, detailImagePath);
@@ -84,12 +85,6 @@ public class GuideService {
             guide.getKeywords());
     }
 
-    private String getFileExtension(String fileName) {
-        if (fileName != null && fileName.contains(".")) {
-            return fileName.substring(fileName.lastIndexOf(".") + 1);
-        }
-        return "";
-    }
 
     @Transactional(readOnly = true)
     public GuideResponseDto getInfo(Long guideId) {
