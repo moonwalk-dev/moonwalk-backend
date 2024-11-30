@@ -6,15 +6,15 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ModuleResponseDto {
-
-    private Long id;
+public class ModuleSaveDto {
 
     private String name;
 
     private String description;
 
-    private String size;
+    private int width;
+
+    private int height;
 
     private int price;
 
@@ -24,8 +24,5 @@ public class ModuleResponseDto {
 
     private int capacity;
 
-    private String topImageUrl;
-
-    private String isoImageUrl;
-
+    private Long categoryId;
 }

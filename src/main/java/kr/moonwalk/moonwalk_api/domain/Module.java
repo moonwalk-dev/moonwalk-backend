@@ -2,6 +2,7 @@ package kr.moonwalk.moonwalk_api.domain;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,11 +33,15 @@ public class Module {
 
     private String description;
 
-    private String size;
+    private int width;
+
+    private int height;
 
     private int price;
 
-    private String material;
+    @ElementCollection
+    @Column(name = "material")
+    private List<String> materials = new ArrayList<>();
 
     private String serialNumber;
 
@@ -52,17 +59,24 @@ public class Module {
     @JoinColumn(name = "top_image_id")
     private Image topImage;
 
-    public Module(String name, String description, String size, int price, String material,
-        String serialNumber, int capacity, Category category, Image isoImage, Image topImage) {
+    public Module(String name, String description, int width, int height, int price, List<String>  materials,
+        String serialNumber, int capacity, Category category) {
         this.name = name;
         this.description = description;
-        this.size = size;
+        this.width = width;
+        this.height = height;
         this.price = price;
-        this.material = material;
+        this.materials = materials;
         this.serialNumber = serialNumber;
         this.capacity = capacity;
         this.category = category;
-        this.isoImage = isoImage;
+    }
+
+    public void setTopImage(Image topImage) {
         this.topImage = topImage;
+    }
+
+    public void setIsoImage(Image isoImage) {
+        this.isoImage = isoImage;
     }
 }

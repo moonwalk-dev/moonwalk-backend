@@ -37,7 +37,7 @@ public class GuideController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "공간 생성")
+    @Operation(summary = "관리자 전용 공간 생성")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GuideSaveResponseDto> createGuide(

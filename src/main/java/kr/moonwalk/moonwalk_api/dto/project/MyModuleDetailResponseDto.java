@@ -1,5 +1,6 @@
 package kr.moonwalk.moonwalk_api.dto.project;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -27,7 +28,7 @@ public class MyModuleDetailResponseDto {
 
     private String moduleSize;
 
-    private String moduleMaterial;
+    private List<String> moduleMaterials;
 
     private int quantity;
 

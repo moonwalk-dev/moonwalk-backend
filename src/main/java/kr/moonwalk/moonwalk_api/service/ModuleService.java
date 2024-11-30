@@ -3,12 +3,16 @@ package kr.moonwalk.moonwalk_api.service;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import kr.moonwalk.moonwalk_api.domain.Category;
 import kr.moonwalk.moonwalk_api.domain.Category.Type;
+import kr.moonwalk.moonwalk_api.domain.Image;
 import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.dto.module.CategoriesModulesResponseDto;
 import kr.moonwalk.moonwalk_api.dto.module.CategoryModuleDto;
 import kr.moonwalk.moonwalk_api.dto.module.CategoryModulesResponseDto;
 import kr.moonwalk.moonwalk_api.dto.module.ModuleResponseDto;
+import kr.moonwalk.moonwalk_api.dto.module.ModuleSaveDto;
+import kr.moonwalk.moonwalk_api.dto.module.ModuleSaveResponseDto;
 import kr.moonwalk.moonwalk_api.dto.module.ModuleSearchResponseDto;
 import kr.moonwalk.moonwalk_api.dto.module.ModuleSearchResultDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
@@ -18,6 +22,7 @@ import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +30,7 @@ public class ModuleService {
 
     private final ModuleRepository moduleRepository;
     private final CategoryRepository categoryRepository;
+    private final ImageService imageService;
 
     @Transactional(readOnly = true)
     public CategoriesModulesResponseDto getModulesByCategoryNames(List<String> categoryNames) {
@@ -60,10 +66,11 @@ public class ModuleService {
         Module module = moduleRepository.findById(moduleId)
             .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
 
-        String topImageUrl = module.getTopImage().getImageUrl();
-        String isoImageUrl = module.getIsoImage().getImageUrl();
+        String topImageUrl = module.getTopImage() != null ? module.getTopImage().getImageUrl() : null;
+        String isoImageUrl = module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null;
+        String size = module.getWidth() + "*" + module.getHeight();
         return new ModuleResponseDto(module.getId(), module.getName(), module.getDescription(),
-            module.getSize(), module.getPrice(), module.getMaterial(), module.getSerialNumber(),
+            size, module.getPrice(), module.getMaterials(), module.getSerialNumber(),
             module.getCapacity(), topImageUrl, isoImageUrl);
     }
 
@@ -83,4 +90,42 @@ public class ModuleService {
 
         return new ModuleSearchResultDto(query, moduleDtos);
     }
+
+    public ModuleSaveResponseDto saveModule(ModuleSaveDto moduleSaveDto, MultipartFile topImageFile,
+        MultipartFile isoImageFile) {
+
+        Category category = categoryRepository.findById(moduleSaveDto.getCategoryId())
+            .orElseThrow(() -> new CategoryNotFoundException("존재하지 않는 카테고리입니다."));
+
+        Module module = new Module(moduleSaveDto.getName(), moduleSaveDto.getDescription(),
+            moduleSaveDto.getWidth(), moduleSaveDto.getHeight(), moduleSaveDto.getPrice(),
+            moduleSaveDto.getMaterials(), moduleSaveDto.getSerialNumber(),
+            moduleSaveDto.getCapacity(), category);
+
+        if (topImageFile != null) {
+            String topExtension = getFileExtension(topImageFile.getOriginalFilename());
+            String topImagePath = "modules/" + moduleSaveDto.getName() + "/top." + topExtension;
+            Image topImage = imageService.uploadAndSaveImage(topImageFile, topImagePath);
+            module.setTopImage(topImage);
+        }
+        if (isoImageFile != null) {
+            String isoExtension = getFileExtension(isoImageFile.getOriginalFilename());
+            String isoImagePath = "modules/" + moduleSaveDto.getName() + "/iso." + isoExtension;
+            Image isoImage = imageService.uploadAndSaveImage(isoImageFile, isoImagePath);
+            module.setIsoImage(isoImage);
+        }
+        Module savedModule = moduleRepository.save(module);
+
+        return new ModuleSaveResponseDto(savedModule.getId(), savedModule.getName(),
+            savedModule.getSerialNumber(), savedModule.getCapacity(), category.getId());
+    }
+
+    private String getFileExtension(String fileName) {
+        if (fileName != null && fileName.contains(".")) {
+            return fileName.substring(fileName.lastIndexOf(".") + 1);
+        }
+        return "";
+    }
+
+
 }

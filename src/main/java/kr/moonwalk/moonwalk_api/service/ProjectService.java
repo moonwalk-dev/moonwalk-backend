@@ -253,11 +253,12 @@ public class ProjectService {
 
         Category subCategory = module.getCategory();
         Category mainCategory = subCategory.getParentCategory();
+        String size = module.getWidth() + "*" + module.getHeight();
 
         return new MyModuleDetailResponseDto(myModuleId, projectId, module.getId(),
             mainCategory != null ? mainCategory.getName() : null, subCategory.getName(),
             module.getName(), module.getCapacity(), module.getSerialNumber(),
-            module.getIsoImage().getImageUrl(), module.getSize(), module.getMaterial(),
+            module.getIsoImage().getImageUrl(), size, module.getMaterials(),
             myModule.getQuantity(), module.getPrice());
     }
 
