@@ -29,9 +29,6 @@ public class SecurityConfig {
     private static final List<String> PERMIT_URLS = List.of("/api/auth/login", "/api/auth/signup",
         "/api/auth/reissue",
 
-        "/api/categories/**", "/api/modules/**", "/api/moods/**",
-//        "/api/guides/**",
-
         "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
 
     @Bean
