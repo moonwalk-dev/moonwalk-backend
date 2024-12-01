@@ -37,10 +37,6 @@ public class ModuleService {
     public CategoriesModulesResponseDto getModulesByCategoryNames(List<String> categoryNames) {
         List<Module> modules = moduleRepository.findByCategoryNamesAndType(categoryNames, Type.TYPE_MODULE);
 
-        if (modules.isEmpty()) {
-            throw new CategoryNotFoundException("해당 카테고리에 모듈이 존재하지 않습니다.");
-        }
-
         Map<String, List<CategoryModuleDto>> groupedModules = modules.stream()
             .collect(Collectors.groupingBy(
                 module -> module.getCategory().getName(),
@@ -53,12 +49,17 @@ public class ModuleService {
                 ), Collectors.toList())
             ));
 
+        for (String categoryName : categoryNames) {
+            groupedModules.putIfAbsent(categoryName, List.of());
+        }
+
         List<CategoryModulesResponseDto> categoryModules = groupedModules.entrySet().stream()
             .map(entry -> new CategoryModulesResponseDto(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());
 
         return new CategoriesModulesResponseDto(categoryModules);
     }
+
 
 
     @Transactional(readOnly = true)
