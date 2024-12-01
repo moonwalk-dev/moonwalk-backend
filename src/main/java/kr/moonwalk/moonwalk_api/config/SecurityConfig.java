@@ -27,9 +27,7 @@ public class SecurityConfig {
     private final JwtRequestFilter jwtRequestFilter;
 
     private static final List<String> PERMIT_URLS = List.of("/api/auth/login", "/api/auth/signup",
-        "/api/auth/reissue",
-
-        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
+        "/api/auth/reissue", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
