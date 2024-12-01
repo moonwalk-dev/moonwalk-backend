@@ -137,9 +137,11 @@ public class GuideLoader implements CommandLineRunner {
         String bucketName, String baseFolder, Category category) {
         String folderPath = baseFolder + englishName + "/";
 
-        String coverImageKey = folderPath + "cover.png";
-        Image coverImage = new Image(getS3ObjectUrl(bucketName, coverImageKey));
-        coverImage = imageRepository.save(coverImage);
+        String coverImageKey = getCoverImageKey(bucketName, folderPath);
+        Image coverImage = coverImageKey != null ? new Image(getS3ObjectUrl(bucketName, coverImageKey)) : null;
+        if (coverImage != null) {
+            coverImage = imageRepository.save(coverImage);
+        }
 
         List<Image> detailImages = getS3ImagesFromFolder(bucketName, folderPath).stream()
             .filter(imageKey -> imageKey.contains("detail"))
@@ -156,6 +158,13 @@ public class GuideLoader implements CommandLineRunner {
         return guide;
     }
 
+    private String getCoverImageKey(String bucketName, String folderPath) {
+        List<String> keys = getS3ImagesFromFolder(bucketName, folderPath);
+        return keys.stream()
+            .filter(key -> key.contains("cover"))
+            .findFirst()
+            .orElse(null);
+    }
 
     private List<String> getS3ImagesFromFolder(String bucketName, String folderPath) {
         ListObjectsV2Request request = new ListObjectsV2Request()
@@ -165,6 +174,7 @@ public class GuideLoader implements CommandLineRunner {
         ListObjectsV2Result result = amazonS3.listObjectsV2(request);
         return result.getObjectSummaries().stream()
             .map(S3ObjectSummary::getKey)
+            .filter(key -> key.matches(".*\\.(png|jpg|jpeg|gif)$"))
             .collect(Collectors.toList());
     }
 

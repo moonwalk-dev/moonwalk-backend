@@ -31,42 +31,19 @@ public class MoodLoader implements CommandLineRunner {
             String bucketName = "moonwalk-project";
             String baseFolder = "moods/";
 
-            Image coverImageNatural = new Image(getS3ObjectUrl(bucketName, baseFolder + "natural/cover.png"));
-            Image coverImageModern = new Image(getS3ObjectUrl(bucketName, baseFolder + "modern/cover.png"));
-            Image coverImageCasual = new Image(getS3ObjectUrl(bucketName, baseFolder + "casual/cover.png"));
-            Image coverImageHighEnd = new Image(getS3ObjectUrl(bucketName, baseFolder + "highend/cover.png"));
-            Image coverImageHighTech = new Image(getS3ObjectUrl(bucketName, baseFolder + "hightech/cover.png"));
-            Image coverImageCreative = new Image(getS3ObjectUrl(bucketName, baseFolder + "creative/cover.png"));
+            Image coverImageNatural = getCoverImage(bucketName, baseFolder + "natural/");
+            Image coverImageModern = getCoverImage(bucketName, baseFolder + "modern/");
+            Image coverImageCasual = getCoverImage(bucketName, baseFolder + "casual/");
+            Image coverImageHighEnd = getCoverImage(bucketName, baseFolder + "highend/");
+            Image coverImageHighTech = getCoverImage(bucketName, baseFolder + "hightech/");
+            Image coverImageCreative = getCoverImage(bucketName, baseFolder + "creative/");
 
-            List<Image> detailImagesNatural = getS3ImagesFromFolder(bucketName, baseFolder + "natural/").stream()
-                .filter(imageKey -> imageKey.contains("detail"))
-                .map(imageKey -> new Image(getS3ObjectUrl(bucketName, imageKey)))
-                .collect(Collectors.toList());
-
-            List<Image> detailImagesModern = getS3ImagesFromFolder(bucketName, baseFolder + "modern/").stream()
-                .filter(imageKey -> imageKey.contains("detail"))
-                .map(imageKey -> new Image(getS3ObjectUrl(bucketName, imageKey)))
-                .collect(Collectors.toList());
-
-            List<Image> detailImagesCasual = getS3ImagesFromFolder(bucketName, baseFolder + "casual/").stream()
-                .filter(imageKey -> imageKey.contains("detail"))
-                .map(imageKey -> new Image(getS3ObjectUrl(bucketName, imageKey)))
-                .collect(Collectors.toList());
-
-            List<Image> detailImagesHighEnd = getS3ImagesFromFolder(bucketName, baseFolder + "highend/").stream()
-                .filter(imageKey -> imageKey.contains("detail"))
-                .map(imageKey -> new Image(getS3ObjectUrl(bucketName, imageKey)))
-                .collect(Collectors.toList());
-
-            List<Image> detailImagesHighTech = getS3ImagesFromFolder(bucketName, baseFolder + "hightech/").stream()
-                .filter(imageKey -> imageKey.contains("detail"))
-                .map(imageKey -> new Image(getS3ObjectUrl(bucketName, imageKey)))
-                .collect(Collectors.toList());
-
-            List<Image> detailImagesCreative = getS3ImagesFromFolder(bucketName, baseFolder + "creative/").stream()
-                .filter(imageKey -> imageKey.contains("detail"))
-                .map(imageKey -> new Image(getS3ObjectUrl(bucketName, imageKey)))
-                .collect(Collectors.toList());
+            List<Image> detailImagesNatural = getDetailImages(bucketName, baseFolder + "natural/");
+            List<Image> detailImagesModern = getDetailImages(bucketName, baseFolder + "modern/");
+            List<Image> detailImagesCasual = getDetailImages(bucketName, baseFolder + "casual/");
+            List<Image> detailImagesHighEnd = getDetailImages(bucketName, baseFolder + "highend/");
+            List<Image> detailImagesHighTech = getDetailImages(bucketName, baseFolder + "hightech/");
+            List<Image> detailImagesCreative = getDetailImages(bucketName, baseFolder + "creative/");
 
             Mood naturalMood = new Mood("내추럴", "따뜻하고 자연스러운 분위기", coverImageNatural);
             Mood modernMood = new Mood("모던", "세련되고 심플한 분위기", coverImageModern);
@@ -84,6 +61,23 @@ public class MoodLoader implements CommandLineRunner {
 
             moodRepository.saveAll(List.of(naturalMood, modernMood, casualMood, highEndMood, highTechMood, creativeMood));
         }
+    }
+
+    private Image getCoverImage(String bucketName, String folderPath) {
+        List<String> keys = getS3ImagesFromFolder(bucketName, folderPath);
+        String coverImageKey = keys.stream()
+            .filter(key -> key.contains("cover") && key.matches(".*\\.(png|jpg|jpeg|gif)$"))
+            .findFirst()
+            .orElse(null);
+
+        return coverImageKey != null ? new Image(getS3ObjectUrl(bucketName, coverImageKey)) : null;
+    }
+
+    private List<Image> getDetailImages(String bucketName, String folderPath) {
+        return getS3ImagesFromFolder(bucketName, folderPath).stream()
+            .filter(imageKey -> imageKey.contains("detail") && imageKey.matches(".*\\.(png|jpg|jpeg|gif)$"))
+            .map(imageKey -> new Image(getS3ObjectUrl(bucketName, imageKey)))
+            .collect(Collectors.toList());
     }
 
     private List<String> getS3ImagesFromFolder(String bucketName, String folderPath) {
