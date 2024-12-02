@@ -122,4 +122,58 @@ public class ModuleService {
         return new ModuleSaveResponseDto(savedModule.getId(), savedModule.getName(),
             savedModule.getSerialNumber(), savedModule.getCapacity(), category.getId());
     }
+
+    @Transactional
+    public void deleteGuide(Long moduleId) {
+        Module module = moduleRepository.findById(moduleId)
+            .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
+
+        moduleRepository.delete(module);
+    }
+
+    public ModuleSaveResponseDto updateModule(Long moduleId, ModuleSaveDto moduleDto,
+        MultipartFile topImageFile, MultipartFile isoImageFile) {
+
+        Module module = moduleRepository.findById(moduleId)
+            .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
+
+        if (moduleDto != null) {
+            if (moduleDto.getName() != null) module.updateName(moduleDto.getName());
+            if (moduleDto.getDescription() != null) module.updateDescription(moduleDto.getDescription());
+            if (moduleDto.getWidth() != null) module.updateWidth(moduleDto.getWidth());
+            if (moduleDto.getHeight() != null) module.updateHeight(moduleDto.getHeight());
+            if (moduleDto.getPrice() != null) module.updatePrice(moduleDto.getPrice());
+            if (moduleDto.getMaterials() != null) module.updateMaterials(moduleDto.getMaterials());
+            if (moduleDto.getSerialNumber() != null) module.updateSerialNumber(moduleDto.getSerialNumber());
+            if (moduleDto.getCapacity() != null) module.updateCapacity(moduleDto.getCapacity());
+
+            if (moduleDto.getCategoryId() != null) {
+                Category category = categoryRepository.findById(moduleDto.getCategoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+                module.updateCategory(category);
+            }
+
+            if (topImageFile != null) {
+                String topExtension = FileUtil.getFileExtension(topImageFile.getOriginalFilename());
+                String topImagePath = "modules/" + module.getName() + "/top." + topExtension;
+                module.setTopImage(null);
+                Image updatedCoverImage = imageService.updateImage(topImageFile, topImagePath, module.getTopImage());
+                module.setTopImage(updatedCoverImage);
+            }
+
+            if (isoImageFile != null) {
+                String isoExtension = FileUtil.getFileExtension(isoImageFile.getOriginalFilename());
+                String isoImagePath = "modules/" + module.getName() + "/iso." + isoExtension;
+                module.setIsoImage(null);
+                Image updatedCoverImage = imageService.updateImage(isoImageFile, isoImagePath, module.getIsoImage());
+                module.setIsoImage(updatedCoverImage);
+            }
+        }
+
+        Module savedModule = moduleRepository.save(module);
+
+        return new ModuleSaveResponseDto(savedModule.getId(), savedModule.getName(),
+            savedModule.getSerialNumber(), savedModule.getCapacity(), module.getCategory().getId());
+    }
+
 }

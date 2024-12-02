@@ -12,17 +12,17 @@ public class ModuleSaveDto {
 
     private String description;
 
-    private int width;
+    private Integer width;
 
-    private int height;
+    private Integer height;
 
-    private int price;
+    private Integer price;
 
     private List<String> materials;
 
     private String serialNumber;
 
-    private int capacity;
+    private Integer capacity;
 
     private Long categoryId;
 }

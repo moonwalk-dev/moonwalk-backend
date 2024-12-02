@@ -79,4 +79,40 @@ public class Module {
     public void setIsoImage(Image isoImage) {
         this.isoImage = isoImage;
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateWidth(int width) {
+        this.width = width;
+    }
+
+    public void updateHeight(int height) {
+        this.height = height;
+    }
+
+    public void updatePrice(int price) {
+        this.price = price;
+    }
+
+    public void updateMaterials(List<String> materials) {
+        this.materials = materials;
+    }
+
+    public void updateSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public void updateCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public void updateCategory(Category category) {
+        this.category = category;
+    }
 }

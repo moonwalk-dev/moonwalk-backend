@@ -75,7 +75,6 @@ public class GuideController {
         return ResponseEntity.ok(response);
     }
 
-
     @Operation(summary = "특정 오피스가이드 조회")
     @GetMapping("/{guideId}")
     public ResponseEntity<GuideResponseDto> getGuideInfo(@PathVariable Long guideId) {
