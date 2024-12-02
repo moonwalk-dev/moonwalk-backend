@@ -162,4 +162,16 @@ public class EstimateService {
 
         return new EstimateInfoListDto(estimates);
     }
+
+    @Transactional
+    public void deleteEstimate(Long estimateId) {
+        Estimate estimate = estimateRepository.findById(estimateId)
+            .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
+
+        User user = estimate.getUser();
+        user.getEstimates().remove(estimate);
+        estimateRepository.delete(estimate);
+
+    }
+
 }

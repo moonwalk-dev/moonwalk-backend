@@ -84,6 +84,15 @@ public class EstimateController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "특정 견적 삭제")
+    @DeleteMapping("/{estimateId}")
+    public ResponseEntity<Void> deleteEstimate(@PathVariable Long estimateId) {
+
+        estimateService.deleteEstimate(estimateId);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "마이페이지 견적 리스트 조회")
     @GetMapping
     public ResponseEntity<EstimateInfoListDto> getEstimates() {
