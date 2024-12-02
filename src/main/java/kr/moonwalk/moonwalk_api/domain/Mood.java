@@ -38,9 +38,12 @@ public class Mood {
     @OneToMany(mappedBy = "mood", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> detailImages = new ArrayList<>();
 
-    public Mood(String name, String description, Image coverImage) {
+    public Mood(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public void setCoverImage(Image coverImage) {
         this.coverImage = coverImage;
     }
 
@@ -49,5 +52,13 @@ public class Mood {
             image.setMood(this);
             this.detailImages.add(image);
         });
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
     }
 }
