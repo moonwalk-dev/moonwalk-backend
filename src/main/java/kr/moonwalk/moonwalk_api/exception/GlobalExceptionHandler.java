@@ -6,6 +6,7 @@ import kr.moonwalk.moonwalk_api.exception.auth.InvalidRefreshTokenException;
 import kr.moonwalk.moonwalk_api.exception.notfound.CartNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.EstimateNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.GuideNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.MoodNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ProjectModuleNotFoundException;
@@ -82,6 +83,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMoodNotFoundException(
         MoodNotFoundException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "MOOD_NOT_FOUND");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(GuideNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleGuideNotFoundException(
+        MoodNotFoundException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "GUIDE_NOT_FOUND");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 

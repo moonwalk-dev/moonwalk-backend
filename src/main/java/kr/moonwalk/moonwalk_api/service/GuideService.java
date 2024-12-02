@@ -13,7 +13,7 @@ import kr.moonwalk.moonwalk_api.dto.guide.GuideResponseDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveResponseDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
-import kr.moonwalk.moonwalk_api.exception.notfound.MoodNotFoundException;
+import kr.moonwalk.moonwalk_api.exception.notfound.GuideNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.GuideRepository;
 import kr.moonwalk.moonwalk_api.util.FileUtil;
@@ -89,7 +89,7 @@ public class GuideService {
     @Transactional(readOnly = true)
     public GuideResponseDto getInfo(Long guideId) {
         Guide guide = guideRepository.findById(guideId)
-            .orElseThrow(() -> new MoodNotFoundException("오피스가이드를 찾을 수 없습니다."));
+            .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
 
         String coverImageUrl = (guide.getCoverImage() != null) ? guide.getCoverImage().getImageUrl() : null;
 
@@ -106,4 +106,62 @@ public class GuideService {
             detailImageUrls
         );
     }
+
+    @Transactional
+    public void deleteGuide(Long guideId) {
+        Guide guide = guideRepository.findById(guideId)
+            .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
+
+        guideRepository.delete(guide);
+    }
+
+    public GuideSaveResponseDto updateGuide(Long guideId, GuideSaveDto guideDto, MultipartFile coverImageFile,
+        List<MultipartFile> detailImageFiles) {
+
+        Guide guide = guideRepository.findById(guideId)
+            .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
+
+        if (guideDto != null) {
+            if (guideDto.getName() != null) guide.updateName(guideDto.getName());
+            if (guideDto.getDescription() != null) guide.updateDescription(guideDto.getDescription());
+            if (guideDto.getKeywords() != null) guide.updateKeywords(guideDto.getKeywords());
+
+            if (guideDto.getCategoryId() != null) {
+                Category category = categoryRepository.findById(guideDto.getCategoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+                guide.updateCategory(category);
+            }
+        }
+
+        if (coverImageFile != null) {
+            String coverExtension = FileUtil.getFileExtension(coverImageFile.getOriginalFilename());
+            String coverImagePath = "guides/" + guide.getName() + "/cover." + coverExtension;
+            guide.setCoverImage(null);
+            Image updatedCoverImage = imageService.updateImage(coverImageFile, coverImagePath, guide.getCoverImage());
+            guide.setCoverImage(updatedCoverImage);
+        }
+
+        if (detailImageFiles != null && !detailImageFiles.isEmpty()) {
+            List<Image> existingDetailImages = guide.getDetailImages();
+            guide.getDetailImages().clear();
+            for (Image existingImage : existingDetailImages) {
+                imageService.deleteImage(existingImage);
+            }
+
+            List<Image> newDetailImages = new ArrayList<>();
+            for (int i = 0; i < detailImageFiles.size(); i++) {
+                MultipartFile file = detailImageFiles.get(i);
+                String detailExtension = FileUtil.getFileExtension(file.getOriginalFilename());
+                String detailImagePath = "guides/" + guide.getName() + "/detail" + (i + 1) + "." + detailExtension;
+                Image newDetailImage = imageService.uploadAndSaveImage(file, detailImagePath);
+                newDetailImages.add(newDetailImage);
+            }
+            guide.addDetailImages(newDetailImages);
+        }
+
+        guideRepository.save(guide);
+
+        return new GuideSaveResponseDto(guide.getId(), guide.getName(), guide.getDescription(), guide.getKeywords());
+    }
+
 }

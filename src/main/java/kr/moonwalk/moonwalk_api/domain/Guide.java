@@ -67,4 +67,21 @@ public class Guide {
     public void setCoverImage(Image coverImage) {
         this.coverImage = coverImage;
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateKeywords(List<String> keywords) {
+        this.keywords = keywords;
+    }
+
+    public void updateCategory(Category category) {
+        this.category = category;
+    }
+
 }
