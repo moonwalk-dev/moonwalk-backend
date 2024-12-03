@@ -15,7 +15,7 @@ public class JwtUtil {
     @Value("${spring.jwt.secret}")
     private String secret;
 
-    private static final long ACCESS_TOKEN_VALIDITY = 1000L * 60 * 60;
+    private static final long ACCESS_TOKEN_VALIDITY = 1000L * 60;
     private static final long REFRESH_TOKEN_VALIDITY = 1000L * 60 * 60 * 24 * 30;
 
     private SecretKey getSigningKey() {
