@@ -10,6 +10,7 @@ import kr.moonwalk.moonwalk_api.repository.UserRepository;
 import kr.moonwalk.moonwalk_api.service.auth.AuthService;
 import kr.moonwalk.moonwalk_api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,9 @@ public class BlueprintService {
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
         User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
 
         String blueprintExtension = FileUtil.getFileExtension(blueprintImageFile.getOriginalFilename());
         String blueprintImagePath =
@@ -48,6 +52,11 @@ public class BlueprintService {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         if (project.getBlueprintImage() != null) {
 
             Image image = project.getBlueprintImage();
@@ -62,6 +71,11 @@ public class BlueprintService {
     public ProjectBlueprintResponseDto getBlueprintUrl(Long projectId) {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
 
         Image image = project.getBlueprintImage();
         if (image == null)

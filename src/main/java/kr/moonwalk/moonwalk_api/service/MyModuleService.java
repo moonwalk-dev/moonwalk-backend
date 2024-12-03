@@ -7,6 +7,7 @@ import kr.moonwalk.moonwalk_api.domain.Category.Type;
 import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.domain.MyModule;
 import kr.moonwalk.moonwalk_api.domain.Project;
+import kr.moonwalk.moonwalk_api.domain.User;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.MyModuleDetailResponseDto;
@@ -21,7 +22,9 @@ import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.MyModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.ProjectModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.ProjectRepository;
+import kr.moonwalk.moonwalk_api.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,11 +38,17 @@ public class MyModuleService {
     private final ProjectModuleRepository projectModuleRepository;
     private final PlacementHistoryService placementHistoryService;
     private final CategoryRepository categoryRepository;
+    private final AuthService authService;
 
     @Transactional(readOnly = true)
     public MyModuleListResponseDto getFilteredMyModules(Long projectId, List<String> categoryNames) {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
 
         List<Long> categoryIds = categoryNames != null && !categoryNames.isEmpty()
             ? categoryRepository.findIdsByNameInAndType(categoryNames, Type.TYPE_MODULE)
@@ -66,6 +75,11 @@ public class MyModuleService {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         List<MyModule> myModules = myModuleRepository.findByProjectAndModuleNameContainingIgnoreCase(
             project, query);
 
@@ -84,6 +98,11 @@ public class MyModuleService {
     public MyModuleAddResponseDto addModule(Long projectId, MyModuleAddDto myModuleAddDto) {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
 
         Module module = moduleRepository.findById(myModuleAddDto.getModuleId())
             .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
@@ -113,6 +132,11 @@ public class MyModuleService {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         MyModule myModule = myModuleRepository.findById(myModuleId)
             .orElseThrow(() -> new CartNotFoundException("해당 항목을 찾을 수 없습니다."));
 
@@ -127,6 +151,14 @@ public class MyModuleService {
 
     @Transactional(readOnly = true)
     public MyModuleDetailResponseDto getInfoMyModule(Long projectId, Long myModuleId) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         MyModule myModule = myModuleRepository.findById(myModuleId)
             .orElseThrow(() -> new CartNotFoundException("해당 항목을 찾을 수 없습니다."));
 

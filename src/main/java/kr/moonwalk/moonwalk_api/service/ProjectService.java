@@ -22,6 +22,7 @@ import kr.moonwalk.moonwalk_api.repository.ProjectRepository;
 import kr.moonwalk.moonwalk_api.service.auth.AuthService;
 import kr.moonwalk.moonwalk_api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,6 +83,11 @@ public class ProjectService {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         int placedTotalPrice = project.getPlacedTotalPrice();
         int estimatedTotalPrice = project.getEstimatedTotalPrice();
 
@@ -118,10 +124,13 @@ public class ProjectService {
     public ProjectSaveResponseDto save(Long projectId, ProjectSaveDto projectSaveDto,
         MultipartFile coverImageFile) {
 
-        User user = authService.getCurrentAuthenticatedUser();
-
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
 
         project.save(projectSaveDto.getTitle(), projectSaveDto.getClient(),
             projectSaveDto.getArea());
@@ -148,6 +157,10 @@ public class ProjectService {
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
         User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         user.getProjects().remove(project);
 
         projectRepository.delete(project);

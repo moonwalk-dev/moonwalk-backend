@@ -13,6 +13,7 @@ import kr.moonwalk.moonwalk_api.exception.notfound.ProjectModuleNotFoundExceptio
 import kr.moonwalk.moonwalk_api.exception.notfound.ProjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -110,8 +111,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
         IllegalArgumentException ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "IllegalArgument");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "ILLEGAL ARGUMENT");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
+        AccessDeniedException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "ACCESS DENIED");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

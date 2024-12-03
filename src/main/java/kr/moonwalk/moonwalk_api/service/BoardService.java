@@ -6,6 +6,7 @@ import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.domain.MyModule;
 import kr.moonwalk.moonwalk_api.domain.Project;
 import kr.moonwalk.moonwalk_api.domain.ProjectModule;
+import kr.moonwalk.moonwalk_api.domain.User;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceUpdateResponseDto;
@@ -19,7 +20,9 @@ import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.MyModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.ProjectModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.ProjectRepository;
+import kr.moonwalk.moonwalk_api.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,7 @@ public class BoardService {
     private final ModuleRepository moduleRepository;
     private final ProjectModuleRepository projectModuleRepository;
     private final PlacementHistoryService placementHistoryService;
+    private final AuthService authService;
 
     @Transactional
     public ModulePlaceResponseDto placeModule(Long projectId, Long moduleId,
@@ -39,6 +43,11 @@ public class BoardService {
 
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
 
         Module module = moduleRepository.findById(moduleId)
             .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
@@ -78,6 +87,11 @@ public class BoardService {
         ProjectModule projectModule = projectModuleRepository.findById(projectModuleId).orElseThrow(() -> new ProjectModuleNotFoundException("배치된 모듈을 찾을 수 없습니다."));
         Long moduleId = projectModule.getModule().getId();
 
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(projectModule.getProject())) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         placementHistoryService.saveHistory(projectModule.getProject(), projectModule.getModule(), projectModule, "UPDATE",
             projectModule.getPositionX(), projectModule.getPositionY(), projectModule.getAngle());
 
@@ -95,6 +109,11 @@ public class BoardService {
 
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
 
         ProjectModule projectModule = projectModuleRepository.findById(projectModuleId).orElseThrow(() -> new ProjectModuleNotFoundException("배치된 모듈을 찾을 수 없습니다."));
 
@@ -121,6 +140,11 @@ public class BoardService {
 
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
 
         List<ModulePositionDto> modulePositions = project.getProjectModules().stream()
             .filter(projectModule -> !projectModule.isDeleted())

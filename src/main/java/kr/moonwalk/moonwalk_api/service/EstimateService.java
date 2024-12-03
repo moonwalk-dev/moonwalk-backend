@@ -28,6 +28,7 @@ import kr.moonwalk.moonwalk_api.repository.ModuleRepository;
 import kr.moonwalk.moonwalk_api.repository.MoodRepository;
 import kr.moonwalk.moonwalk_api.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +61,11 @@ public class EstimateService {
         Estimate estimate = estimateRepository.findById(estimateId)
             .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
 
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getEstimates().contains(estimate)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         Cart cart = cartRepository.findByEstimateAndModule(estimate, module)
             .orElseGet(() -> new Cart(estimate, module, cartAddDto.getQuantity()));
 
@@ -80,6 +86,11 @@ public class EstimateService {
         Estimate estimate = estimateRepository.findById(estimateId)
             .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
 
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getEstimates().contains(estimate)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         Cart cart = cartRepository.findById(cartId)
             .orElseThrow(() -> new CartNotFoundException("해당 카트 항목을 찾을 수 없습니다."));
 
@@ -91,6 +102,11 @@ public class EstimateService {
     public CartListResponseDto getFilteredCarts(Long estimateId, List<String> categoryNames) {
         Estimate estimate = estimateRepository.findById(estimateId)
             .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getEstimates().contains(estimate)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
 
         List<Long> categoryIds = categoryNames != null && !categoryNames.isEmpty()
             ? categoryRepository.findIdsByNameInAndType(categoryNames, Type.TYPE_MODULE)
@@ -118,6 +134,11 @@ public class EstimateService {
         Estimate estimate = estimateRepository.findById(estimateId)
             .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
 
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getEstimates().contains(estimate)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         Mood mood = moodRepository.findById(moodId)
             .orElseThrow(() -> new MoodNotFoundException("무드를 찾을 수 없습니다."));
 
@@ -133,6 +154,11 @@ public class EstimateService {
     public EstimateResponseDto getInfo(Long estimateId) {
         Estimate estimate = estimateRepository.findById(estimateId)
             .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getEstimates().contains(estimate)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
 
         Long moodId = estimate.getMood() != null ? estimate.getMood().getId() : null;
         String moodName = estimate.getMood() != null ? estimate.getMood().getName() : "무드가 설정되지 않았습니다.";
@@ -168,7 +194,11 @@ public class EstimateService {
         Estimate estimate = estimateRepository.findById(estimateId)
             .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
 
-        User user = estimate.getUser();
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getEstimates().contains(estimate)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
         user.getEstimates().remove(estimate);
         estimateRepository.delete(estimate);
 
