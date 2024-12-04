@@ -111,15 +111,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
         IllegalArgumentException ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "ILLEGAL ARGUMENT");
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "ILLEGAL_ARGUMENT");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
-        AccessDeniedException ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "ACCESS DENIED");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "ACCESS_DENIED");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

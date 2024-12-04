@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     private static final List<String> PERMIT_URLS = List.of("/api/auth/login", "/api/auth/signup",
         "/api/auth/reissue", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
@@ -35,9 +37,12 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(
                 auth -> auth.requestMatchers(PERMIT_URLS.toArray(new String[0])).permitAll()
-                    .anyRequest().authenticated()).sessionManagement(
+                    .anyRequest().authenticated())
+            .sessionManagement(
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.setSharedObject(AuthenticationEntryPoint.class, customAuthenticationEntryPoint);
 
         return http.build();
     }

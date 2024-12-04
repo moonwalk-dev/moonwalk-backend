@@ -1,10 +1,12 @@
 package kr.moonwalk.moonwalk_api.filter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import kr.moonwalk.moonwalk_api.service.auth.CustomUserDetailsService;
 import kr.moonwalk.moonwalk_api.util.JwtUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,21 +33,31 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         final String authorizationHeader = request.getHeader("Authorization");
 
-        String email = null;
-        String jwt = null;
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"errorCode\": \"MISSING_TOKEN\", \"message\": \"Authorization header is missing or invalid.\"}");
+            return;
+        }
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
+        String jwt = authorizationHeader.substring(7);
+        String email;
+
+        try {
             email = jwtUtil.extractUsername(jwt);
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"errorCode\": \"TOKEN_EXPIRED\", \"message\": \"Token has expired.\"}");
+            return;
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
             if (jwtUtil.validateToken(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-                authenticationToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request));
+                UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
@@ -53,9 +65,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.equals("/api/auth/reissue");
+        return path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") ||
+            path.equals("/swagger-ui.html") ||
+            List.of("/api/auth/login", "/api/auth/signup", "/api/auth/reissue").contains(path);
     }
+
 }
