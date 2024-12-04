@@ -80,31 +80,42 @@ public class AuthService {
 
     @Transactional
     public JwtResponse refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = getRefreshTokenFromCookie(request);
-        if (refreshToken == null) {
-            throw new InvalidRefreshTokenException("리프레시 토큰이 없습니다.");
+        try {
+            String refreshToken = getRefreshTokenFromCookie(request);
+            if (refreshToken == null) {
+                throw new InvalidRefreshTokenException("리프레시 토큰이 없습니다.");
+            }
+
+            RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new InvalidRefreshTokenException("리프레시 토큰이 유효하지 않습니다."));
+
+            if (!jwtUtil.validateRefreshToken(refreshToken)) {
+                throw new InvalidRefreshTokenException("리프레시 토큰이 만료되었습니다.");
+            }
+
+            String email = storedToken.getEmail();
+            String newAccessToken = jwtUtil.generateAccessToken(email);
+            String newRefreshToken = refreshToken;
+
+//            if (jwtUtil.isRefreshTokenExpiringSoon(refreshToken)) {
+//                newRefreshToken = jwtUtil.generateRefreshToken(email);
+//
+//                refreshTokenRepository.delete(storedToken);
+//                RefreshToken newToken = new RefreshToken(newRefreshToken, email, LocalDateTime.now().plusDays(30));
+//                refreshTokenRepository.save(newToken);
+//
+//                setRefreshTokenCookie(response, newRefreshToken);
+//            }
+
+            return new JwtResponse(newAccessToken);
+        } catch (InvalidRefreshTokenException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("리프레시 토큰 처리 중 오류 발생", e);
         }
-
-        RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
-            .orElseThrow(() -> new InvalidRefreshTokenException("리프레시 토큰이 유효하지 않습니다."));
-
-        if (storedToken.getExpirationDate().isBefore(LocalDateTime.now())) {
-            throw new InvalidRefreshTokenException("리프레시 토큰이 만료되었습니다.");
-        }
-
-        String email = storedToken.getEmail();
-        String newAccessToken = jwtUtil.generateAccessToken(email);
-        String newRefreshToken = refreshToken;
-
-        if (jwtUtil.isRefreshTokenExpiringSoon(refreshToken)) {
-            newRefreshToken = jwtUtil.generateRefreshToken(email);
-            setRefreshTokenCookie(response, newRefreshToken);
-            storedToken.updateToken(newRefreshToken, LocalDateTime.now().plusDays(30));
-            refreshTokenRepository.save(storedToken);
-        }
-
-        return new JwtResponse(newAccessToken);
     }
+
+
 
     @Transactional
     public void logout(HttpServletRequest request, HttpServletResponse response) {

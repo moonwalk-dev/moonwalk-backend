@@ -1,10 +1,12 @@
 package kr.moonwalk.moonwalk_api.util;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import kr.moonwalk.moonwalk_api.exception.auth.InvalidRefreshTokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -16,7 +18,7 @@ public class JwtUtil {
     private String secret;
 
     private static final long ACCESS_TOKEN_VALIDITY = 1000L * 60;
-    private static final long REFRESH_TOKEN_VALIDITY = 1000L * 60 * 60 * 24 * 30;
+    private static final long REFRESH_TOKEN_VALIDITY = 1000L * 60 * 3;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
@@ -74,14 +76,20 @@ public class JwtUtil {
     }
 
     public boolean isRefreshTokenExpiringSoon(String token) {
-        Date expirationDate = Jwts.parserBuilder()
-            .setSigningKey(getSigningKey())
-            .build()
-            .parseClaimsJws(token)
-            .getBody()
-            .getExpiration();
+        try {
+            Date expirationDate = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
 
-        long remainingTime = expirationDate.getTime() - System.currentTimeMillis();
-        return remainingTime < 24 * 60 * 60 * 1000 * 3; //3일
+            long remainingTime = expirationDate.getTime() - System.currentTimeMillis();
+            return remainingTime < 24 * 60 * 60 * 1000 * 3; // 3일
+        } catch (ExpiredJwtException e) {
+            throw new InvalidRefreshTokenException("리프레시 토큰이 만료되었습니다.");
+        } catch (Exception e) {
+            throw new InvalidRefreshTokenException("리프레시 토큰이 유효하지 않습니다.");
+        }
     }
 }
