@@ -41,7 +41,8 @@ public class MyModuleService {
     private final AuthService authService;
 
     @Transactional(readOnly = true)
-    public MyModuleListResponseDto getFilteredMyModules(Long projectId, List<String> categoryNames) {
+    public MyModuleListResponseDto getFilteredMyModules(Long projectId,
+        List<String> categoryNames) {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
 
@@ -51,21 +52,16 @@ public class MyModuleService {
         }
 
         List<Long> categoryIds = categoryNames != null && !categoryNames.isEmpty()
-            ? categoryRepository.findIdsByNameInAndType(categoryNames, Type.TYPE_MODULE)
-            : null;
+            ? categoryRepository.findIdsByNameInAndType(categoryNames, Type.TYPE_MODULE) : null;
 
-        List<MyModuleResponseDto> myModules = project.getMyModules().stream()
-            .filter(cart -> categoryIds == null || categoryIds.contains(cart.getModule().getCategory().getId()))
-            .map(myModule -> new MyModuleResponseDto(
-                myModule.getId(),
-                myModule.getProject().getId(),
-                myModule.getModule().getId(),
-                myModule.getModule().getName(),
-                myModule.getModule().getCapacity(),
-                myModule.getModule().getSerialNumber(),
-                myModule.getModule().getIsoImage() != null ? myModule.getModule().getIsoImage().getImageUrl() : null,
-                myModule.getQuantity()))
-            .collect(Collectors.toList());
+        List<MyModuleResponseDto> myModules = project.getMyModules().stream().filter(
+            cart -> categoryIds == null || categoryIds.contains(
+                cart.getModule().getCategory().getId())).map(
+            myModule -> new MyModuleResponseDto(myModule.getId(), myModule.getProject().getId(),
+                myModule.getModule().getId(), myModule.getModule().getName(),
+                myModule.getModule().getCapacity(), myModule.getModule().getSerialNumber(),
+                myModule.getModule().getIsoImage() != null ? myModule.getModule().getIsoImage()
+                    .getImageUrl() : null, myModule.getQuantity())).collect(Collectors.toList());
 
         return new MyModuleListResponseDto(myModules);
     }
@@ -84,12 +80,11 @@ public class MyModuleService {
             project, query);
 
         List<MyModuleResponseDto> myModuleDtos = myModules.stream().map(
-                myModule -> new MyModuleResponseDto(myModule.getId(), project.getId(),
-                    myModule.getModule().getId(), myModule.getModule().getName(),
-                    myModule.getModule().getCapacity(), myModule.getModule().getSerialNumber(),
-                    myModule.getModule().getIsoImage() != null ? myModule.getModule().getIsoImage()
-                        .getImageUrl() : null, myModule.getQuantity()))
-            .collect(Collectors.toList());
+            myModule -> new MyModuleResponseDto(myModule.getId(), project.getId(),
+                myModule.getModule().getId(), myModule.getModule().getName(),
+                myModule.getModule().getCapacity(), myModule.getModule().getSerialNumber(),
+                myModule.getModule().getIsoImage() != null ? myModule.getModule().getIsoImage()
+                    .getImageUrl() : null, myModule.getQuantity())).collect(Collectors.toList());
 
         return new MyModuleSearchResultDto(project.getId(), query, myModuleDtos);
     }
@@ -140,10 +135,8 @@ public class MyModuleService {
         MyModule myModule = myModuleRepository.findById(myModuleId)
             .orElseThrow(() -> new CartNotFoundException("해당 항목을 찾을 수 없습니다."));
 
-
         placementHistoryService.deleteByProjectAndModule(project, myModule.getModule());
         projectModuleRepository.deleteByProjectAndModule(project, myModule.getModule());
-
 
         project.getMyModules().remove(myModule);
         myModuleRepository.delete(myModule);
@@ -171,8 +164,8 @@ public class MyModuleService {
         return new MyModuleDetailResponseDto(myModuleId, projectId, module.getId(),
             mainCategory != null ? mainCategory.getName() : null, subCategory.getName(),
             module.getName(), module.getCapacity(), module.getSerialNumber(),
-            module.getIsoImage().getImageUrl(), size, module.getMaterials(),
-            myModule.getQuantity(), module.getPrice());
+            module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null, size,
+            module.getMaterials(), myModule.getQuantity(), module.getPrice());
     }
 
 }

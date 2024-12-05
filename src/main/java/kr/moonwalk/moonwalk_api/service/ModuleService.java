@@ -68,7 +68,8 @@ public class ModuleService {
         Module module = moduleRepository.findById(moduleId)
             .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
 
-        String topImageUrl = module.getTopImage() != null ? module.getTopImage().getImageUrl() : null;
+        String topImageUrl =
+            module.getTopImage() != null ? module.getTopImage().getImageUrl() : null;
         String isoImageUrl = module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null;
         String size = module.getWidth() + "*" + module.getHeight();
         return new ModuleResponseDto(module.getId(), module.getName(), module.getDescription(),
