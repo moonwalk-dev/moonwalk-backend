@@ -2,11 +2,13 @@ package kr.moonwalk.moonwalk_api.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import kr.moonwalk.moonwalk_api.dto.project.CanvasDto;
 import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.domain.MyModule;
 import kr.moonwalk.moonwalk_api.domain.Project;
 import kr.moonwalk.moonwalk_api.domain.ProjectModule;
 import kr.moonwalk.moonwalk_api.domain.User;
+import kr.moonwalk.moonwalk_api.dto.project.CanvasResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceUpdateResponseDto;
@@ -75,8 +77,10 @@ public class BoardService {
         placementHistoryService.saveHistory(project, module, projectModule, "ADD",
             modulePlaceDto.getPositionX(), modulePlaceDto.getPositionY(), modulePlaceDto.getAngle());
 
+        String topImageUrl = module.getTopImage() != null ? module.getTopImage().getImageUrl() : null;
+
         return new ModulePlaceResponseDto(myModule.getId(), projectModule.getId(),
-            myModule.getQuantity(), myModule.getUsedQuantity(), module.getTopImage().getImageUrl(), modulePlaceDto.getPositionX(),
+            myModule.getQuantity(), myModule.getUsedQuantity(), topImageUrl, modulePlaceDto.getPositionX(),
             modulePlaceDto.getPositionY(), modulePlaceDto.getAngle());
     }
 
@@ -150,11 +154,24 @@ public class BoardService {
             .filter(projectModule -> !projectModule.isDeleted())
             .map(projectModule -> new ModulePositionDto(
                 projectModule.getId(),
-                projectModule.getModule().getTopImage().getImageUrl(), projectModule.getPositionX(),
+                projectModule.getModule().getTopImage() != null ? projectModule.getModule().getTopImage().getImageUrl() : null, projectModule.getPositionX(),
                 projectModule.getPositionY(), projectModule.getAngle()))
             .collect(Collectors.toList());
 
-        return new ModulePositionListDto(modulePositions);
+        return new ModulePositionListDto(modulePositions, project.getCanvas());
     }
 
+    public CanvasResponseDto updateCanvas(Long projectId, CanvasDto canvasDto) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getProjects().contains(project)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
+        project.setCanvas(canvasDto.getCanvasJson());
+        projectRepository.save(project);
+        return new CanvasResponseDto(canvasDto.getCanvasJson());
+    }
 }

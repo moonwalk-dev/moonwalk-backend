@@ -1,13 +1,13 @@
 package kr.moonwalk.moonwalk_api.dto.project;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-public class ModulePositionListDto {
+@NoArgsConstructor
+public class CanvasDto {
 
-    private List<ModulePositionDto> modulePositions;
     private String canvasJson;
 }

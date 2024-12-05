@@ -2,6 +2,8 @@ package kr.moonwalk.moonwalk_api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import kr.moonwalk.moonwalk_api.dto.project.CanvasDto;
+import kr.moonwalk.moonwalk_api.dto.project.CanvasResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceResponseDto;
 import kr.moonwalk.moonwalk_api.dto.project.ModulePlaceUpdateResponseDto;
@@ -39,6 +41,15 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "캔버스 수정")
+    @PatchMapping("/{projectId}/canvas")
+    public ResponseEntity<CanvasResponseDto> updateCanvas(@PathVariable Long projectId, @RequestBody CanvasDto canvasDto) {
+
+        CanvasResponseDto response = boardService.updateCanvas(projectId, canvasDto);
+
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "모듈 배치 수정")
     @PatchMapping("/{projectId}/boards/{projectModuleId}")
     public ResponseEntity<ModulePlaceUpdateResponseDto> updatePlaceModule(
@@ -61,7 +72,7 @@ public class BoardController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "프로젝트 모듈 포지션 리스트 조회")
+    @Operation(summary = "프로젝트 모듈 포지션 리스트 & 캔버스 조회")
     @GetMapping("/{projectId}/boards")
     public ResponseEntity<ModulePositionListDto> getModulePositions(@PathVariable Long projectId) {
 

@@ -38,6 +38,7 @@ public class Project {
     private String client;
     private String area;
     private LocalDateTime createdAt;
+    private String canvas;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
@@ -70,6 +71,7 @@ public class Project {
         this.client = client;
         this.area = area;
         this.placedTotalPrice = 0;
+        this.canvas = null;
     }
 
     public Project(Estimate estimate, User user) {
@@ -80,6 +82,7 @@ public class Project {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.title = "Project - " + this.createdAt.format(formatter);
         this.placedTotalPrice = 0;
+        this.canvas = null;
 
         for (Cart cart : estimate.getCarts()) {
             MyModule myModule = MyModule.createFromCart(cart, this);
@@ -116,5 +119,9 @@ public class Project {
 
     public void addHistory(ProjectPlacementHistory projectPlacementHistory) {
         this.getHistories().add(projectPlacementHistory);
+    }
+
+    public void setCanvas(String canvas) {
+        this.canvas = canvas;
     }
 }
