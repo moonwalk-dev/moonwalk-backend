@@ -28,7 +28,7 @@ public class SecurityConfig {
     private final JwtRequestFilter jwtRequestFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    private static final List<String> PERMIT_URLS = List.of("/api/auth/login", "/api/auth/signup",
+    private static final List<String> PERMIT_URLS = List.of("/api/auth/login", "/api/auth/signup", "/api/auth/logout",
         "/api/auth/reissue", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
 
     @Bean

@@ -71,7 +71,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         return path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") ||
             path.equals("/swagger-ui.html") ||
-            List.of("/api/auth/login", "/api/auth/signup", "/api/auth/reissue").contains(path);
+            List.of("/api/auth/login", "/api/auth/signup", "/api/auth/logout","/api/auth/reissue").contains(path);
     }
 
 }
