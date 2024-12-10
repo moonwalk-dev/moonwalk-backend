@@ -125,7 +125,7 @@ public class ModuleService {
     }
 
     @Transactional
-    public void deleteGuide(Long moduleId) {
+    public void deleteModule(Long moduleId) {
         Module module = moduleRepository.findById(moduleId)
             .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
 

@@ -72,9 +72,9 @@ public class ModuleController {
     @Operation(summary = "관리자 전용 모듈 삭제")
     @DeleteMapping("/{moduleId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteGuide(@PathVariable Long moduleId) {
+    public ResponseEntity<Void> deleteModule(@PathVariable Long moduleId) {
 
-        moduleService.deleteGuide(moduleId);
+        moduleService.deleteModule(moduleId);
 
         return ResponseEntity.noContent().build();
     }
