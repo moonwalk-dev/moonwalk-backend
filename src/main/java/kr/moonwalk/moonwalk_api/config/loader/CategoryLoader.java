@@ -47,7 +47,7 @@ public class CategoryLoader implements CommandLineRunner {
 
             subCategoryList.add(new Category("업무공간", parentCategoryList.get(1), Type.TYPE_MODULE));
             subCategoryList.add(new Category("임원실", parentCategoryList.get(1), Type.TYPE_MODULE));
-            subCategoryList.add(new Category("집중업무공간", parentCategoryList.get(1), Type.TYPE_MODULE));
+            subCategoryList.add(new Category("집중업무부스", parentCategoryList.get(1), Type.TYPE_MODULE));
             subCategoryList.add(new Category("OA공간", parentCategoryList.get(1), Type.TYPE_MODULE));
 
             subCategoryList.add(new Category("이미지월", parentCategoryList.get(2), Type.TYPE_MODULE));
