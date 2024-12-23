@@ -88,6 +88,7 @@ public class GuideService {
 
     @Transactional(readOnly = true)
     public GuideResponseDto getInfo(Long guideId) {
+
         Guide guide = guideRepository.findById(guideId)
             .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
 
