@@ -8,7 +8,6 @@ import kr.moonwalk.moonwalk_api.domain.Category.Type;
 import kr.moonwalk.moonwalk_api.domain.Image;
 import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.dto.module.CategoriesModulesResponseDto;
-import kr.moonwalk.moonwalk_api.dto.module.CategoryModuleDto;
 import kr.moonwalk.moonwalk_api.dto.module.CategoryModulesResponseDto;
 import kr.moonwalk.moonwalk_api.dto.module.ModuleResponseDto;
 import kr.moonwalk.moonwalk_api.dto.module.ModuleSaveDto;
@@ -37,16 +36,28 @@ public class ModuleService {
     public CategoriesModulesResponseDto getModulesByCategoryNames(List<String> categoryNames) {
         List<Module> modules = moduleRepository.findByCategoryNamesAndType(categoryNames, Type.TYPE_MODULE);
 
-        Map<String, List<CategoryModuleDto>> groupedModules = modules.stream()
+        Map<String, List<ModuleResponseDto>> groupedModules = modules.stream()
             .collect(Collectors.groupingBy(
                 module -> module.getCategory().getName(),
-                Collectors.mapping(module -> new CategoryModuleDto(
-                    module.getId(),
-                    module.getName(),
-                    module.getCapacity(),
-                    module.getSerialNumber(),
-                    module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null
-                ), Collectors.toList())
+                Collectors.mapping(module -> {
+                    String topImageUrl = module.getTopImage() != null ? module.getTopImage().getImageUrl() : null;
+                    String isoImageUrl = module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null;
+                    String size = module.getWidth() + "*" + module.getHeight();
+
+
+                    return new ModuleResponseDto(
+                        module.getId(),
+                        module.getName(),
+                        module.getDescription(),
+                        size,
+                        module.getPrice(),
+                        module.getMaterials(),
+                        module.getSerialNumber(),
+                        module.getCapacity(),
+                        topImageUrl,
+                        isoImageUrl
+                    );
+                }, Collectors.toList())
             ));
 
         for (String categoryName : categoryNames) {
@@ -59,6 +70,7 @@ public class ModuleService {
 
         return new CategoriesModulesResponseDto(categoryModules);
     }
+
 
 
 

@@ -11,7 +11,7 @@ public class CategoryModulesResponseDto {
 
     private String categoryName;
 
-    private List<CategoryModuleDto> modules;
+    private List<ModuleResponseDto> modules;
 
 
 }
