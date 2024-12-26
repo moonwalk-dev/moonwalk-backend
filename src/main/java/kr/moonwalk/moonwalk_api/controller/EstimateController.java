@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/estimates/{estimateId}/carts")
+@RequestMapping("/api/estimates")
 public class EstimateController {
 
     private final EstimateService estimateService;
