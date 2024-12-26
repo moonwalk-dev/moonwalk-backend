@@ -146,12 +146,20 @@ public class EstimateService {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
 
-        List<Long> categoryIds = categoryNames != null && !categoryNames.isEmpty()
-            ? categoryRepository.findIdsByNameInAndType(categoryNames, Type.TYPE_MODULE)
-            : null;
+        List<Long> categoryIds = null;
+        if (categoryNames != null && !categoryNames.isEmpty()) {
+            List<Long> baseCategoryIds = categoryRepository.findIdsByNameInAndType(categoryNames, Type.TYPE_MODULE);
+
+            categoryIds = baseCategoryIds.stream()
+                .flatMap(categoryId -> categoryRepository.findAllSubCategoryIdsById(categoryId, Type.TYPE_MODULE).stream())
+                .distinct()
+                .collect(Collectors.toList());
+        }
+
+        final List<Long> finalCategoryIds = categoryIds;
 
         List<CartResponseDto> carts = estimate.getCarts().stream()
-            .filter(cart -> categoryIds == null || categoryIds.contains(cart.getModule().getCategory().getId()))
+            .filter(cart -> finalCategoryIds == null || finalCategoryIds.contains(cart.getModule().getCategory().getId()))
             .map(cart -> new CartResponseDto(
                 cart.getId(),
                 cart.getEstimate().getId(),
