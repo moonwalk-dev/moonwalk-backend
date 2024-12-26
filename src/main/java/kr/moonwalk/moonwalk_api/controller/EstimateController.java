@@ -5,6 +5,8 @@ import jakarta.validation.Valid;
 import java.util.List;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartListAddDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartListAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateResponseDto;
@@ -25,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/estimates")
+@RequestMapping("/api/estimates/{estimateId}/carts")
 public class EstimateController {
 
     private final EstimateService estimateService;
@@ -44,6 +46,15 @@ public class EstimateController {
 
         CartAddResponseDto response = estimateService.addModule(estimateId, cartAddDto);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "장바구니에 모듈 리스트로 추가", description = "견적에 없으면 새로운 장바구니를 생성하고 모듈을 추가하며, 이미 존재하는 경우 모듈의 수량을 업데이트합니다.")
+    @PostMapping("/{estimateId}/carts/bulk")
+    public ResponseEntity<CartListAddResponseDto> addModules(
+        @PathVariable Long estimateId,
+        @RequestBody @Valid CartListAddDto requestDto) {
+        CartListAddResponseDto response = estimateService.addModules(estimateId, requestDto);
         return ResponseEntity.ok(response);
     }
 

@@ -1,5 +1,6 @@
 package kr.moonwalk.moonwalk_api.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Cart;
@@ -8,8 +9,10 @@ import kr.moonwalk.moonwalk_api.domain.Estimate;
 import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.domain.Mood;
 import kr.moonwalk.moonwalk_api.domain.User;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartListAddDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartListAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
@@ -80,6 +83,41 @@ public class EstimateService {
 
         return new CartAddResponseDto(module.getId(), module.getName(), estimate.getId(), cart.getQuantity());
     }
+
+    @Transactional
+    public CartListAddResponseDto addModules(Long estimateId, CartListAddDto requestDto) {
+        Estimate estimate = estimateRepository.findById(estimateId)
+            .orElseThrow(() -> new EstimateNotFoundException("견적을 찾을 수 없습니다."));
+
+        User user = authService.getCurrentAuthenticatedUser();
+        if (!user.getEstimates().contains(estimate)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
+        List<CartAddResponseDto> responseList = new ArrayList<>();
+
+        for (CartAddDto cartAddDto : requestDto.getModules()) {
+            Module module = moduleRepository.findById(cartAddDto.getModuleId())
+                .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
+
+            Cart cart = cartRepository.findByEstimateAndModule(estimate, module)
+                .orElseGet(() -> new Cart(estimate, module, cartAddDto.getQuantity()));
+
+            if (cart.getId() != null) {
+                cart.setQuantity(cartAddDto.getQuantity());
+            }
+
+            cartRepository.save(cart);
+            responseList.add(new CartAddResponseDto(module.getId(), module.getName(), estimate.getId(), cart.getQuantity()));
+        }
+
+        estimate.updateTotalPrice();
+        estimateRepository.save(estimate);
+
+        return new CartListAddResponseDto(estimate.getId(), responseList);
+    }
+
+
 
     @Transactional
     public void deleteCart(Long estimateId, Long cartId) {
