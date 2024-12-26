@@ -124,4 +124,16 @@ public class Project {
     public void setCanvas(String canvas) {
         this.canvas = canvas;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setClient(String client) {
+        this.client = client;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
 }

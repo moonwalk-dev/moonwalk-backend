@@ -53,6 +53,17 @@ public class ProjectService {
             Estimate estimate = estimateRepository.findById(projectCreateDto.getEstimateId())
                 .orElseThrow(() -> new EstimateNotFoundException("해당 견적을 찾을 수 없습니다."));
             project = new Project(estimate, user);
+
+            if (projectCreateDto.getTitle() != null) {
+                project.setTitle(projectCreateDto.getTitle());
+            }
+            if (projectCreateDto.getClient() != null) {
+                project.setClient(projectCreateDto.getClient());
+            }
+            if (projectCreateDto.getArea() != null) {
+                project.setArea(projectCreateDto.getArea());
+            }
+
         }
 
         if (blueprintImageFile != null) {

@@ -34,7 +34,14 @@ public class ModuleService {
 
     @Transactional(readOnly = true)
     public CategoriesModulesResponseDto getModulesByCategoryNames(List<String> categoryNames) {
-        List<Module> modules = moduleRepository.findByCategoryNamesAndType(categoryNames, Type.TYPE_MODULE);
+        List<Long> baseCategoryIds = categoryRepository.findIdsByNameInAndType(categoryNames, Type.TYPE_MODULE);
+
+        List<Long> allCategoryIds = baseCategoryIds.stream()
+            .flatMap(categoryId -> categoryRepository.findAllSubCategoryIdsById(categoryId, Type.TYPE_MODULE).stream())
+            .distinct()
+            .collect(Collectors.toList());
+
+        List<Module> modules = moduleRepository.findByCategoryIdsAndType(allCategoryIds, Type.TYPE_MODULE);
 
         Map<String, List<ModuleResponseDto>> groupedModules = modules.stream()
             .collect(Collectors.groupingBy(
@@ -43,7 +50,6 @@ public class ModuleService {
                     String topImageUrl = module.getTopImage() != null ? module.getTopImage().getImageUrl() : null;
                     String isoImageUrl = module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null;
                     String size = module.getWidth() + "*" + module.getHeight();
-
 
                     return new ModuleResponseDto(
                         module.getId(),
@@ -70,9 +76,6 @@ public class ModuleService {
 
         return new CategoriesModulesResponseDto(categoryModules);
     }
-
-
-
 
     @Transactional(readOnly = true)
     public ModuleResponseDto getInfo(Long moduleId) {
