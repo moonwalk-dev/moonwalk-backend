@@ -51,7 +51,7 @@ public class AuthService {
         User user = new User(registrationDto.getUsername(), registrationDto.getEmail(), encodedPassword, Role.ROLE_USER);
         User savedUser = userRepository.save(user);
 
-        return new UserResponseDto(savedUser.getId());
+        return new UserResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
     }
 
     @Transactional
@@ -164,5 +164,10 @@ public class AuthService {
 
         return userRepository.findByEmail(userEmail)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    public UserResponseDto getInfo() {
+        User user = getCurrentAuthenticatedUser();
+        return new UserResponseDto(user.getId(), user.getUsername(), user.getEmail());
     }
 }
