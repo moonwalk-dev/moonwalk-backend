@@ -97,15 +97,15 @@ public class AuthService {
             String newAccessToken = jwtUtil.generateAccessToken(email);
             String newRefreshToken = refreshToken;
 
-//            if (jwtUtil.isRefreshTokenExpiringSoon(refreshToken)) {
-//                newRefreshToken = jwtUtil.generateRefreshToken(email);
-//
-//                refreshTokenRepository.delete(storedToken);
-//                RefreshToken newToken = new RefreshToken(newRefreshToken, email, LocalDateTime.now().plusDays(30));
-//                refreshTokenRepository.save(newToken);
-//
-//                setRefreshTokenCookie(response, newRefreshToken);
-//            }
+            if (jwtUtil.isRefreshTokenExpiringSoon(refreshToken)) {
+                newRefreshToken = jwtUtil.generateRefreshToken(email);
+
+                refreshTokenRepository.delete(storedToken);
+                RefreshToken newToken = new RefreshToken(newRefreshToken, email, LocalDateTime.now().plusDays(30));
+                refreshTokenRepository.save(newToken);
+
+                setRefreshTokenCookie(response, newRefreshToken);
+            }
 
             return new JwtResponse(newAccessToken);
         } catch (InvalidRefreshTokenException e) {
