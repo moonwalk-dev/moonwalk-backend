@@ -5,7 +5,7 @@ Moonwalk project's backend API built with Spring Boot.
 ## Getting Started
 
 ### Prerequisites
-- Java 21+
+- Java 17+
 - Gradle
 - Docker (for PostgreSQL)
 
