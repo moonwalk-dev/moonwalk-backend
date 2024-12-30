@@ -59,16 +59,28 @@ public class MyModuleService {
 
         List<MyModuleResponseDto> myModules = project.getMyModules().stream()
             .filter(cart -> categoryIds == null || categoryIds.contains(cart.getModule().getCategory().getId()))
-            .map(myModule -> new MyModuleResponseDto(
-                myModule.getId(),
-                myModule.getProject().getId(),
-                myModule.getModule().getId(),
-                myModule.getModule().getName(),
-                myModule.getModule().getCapacity(),
-                myModule.getModule().getSerialNumber(),
-                myModule.getModule().getIsoImage() != null ? myModule.getModule().getIsoImage().getImageUrl() : null,
-                myModule.getQuantity()
-            ))
+            .map(myModule -> {
+                Module module = myModule.getModule();
+                Category subCategory = module.getCategory();
+                Category mainCategory = subCategory.getParentCategory();
+                String size = module.getWidth() + "*" + module.getHeight();
+
+                return new MyModuleResponseDto(
+                    myModule.getId(),
+                    myModule.getProject().getId(),
+                    module.getId(),
+                    module.getName(),
+                    module.getCapacity(),
+                    module.getSerialNumber(),
+                    module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null,
+                    myModule.getQuantity(),
+                    subCategory.getName(),
+                    mainCategory != null ? mainCategory.getName() : null,
+                    size,
+                    module.getMaterials(),
+                    module.getPrice()
+                );
+            })
             .collect(Collectors.toList());
 
         return new MyModuleListResponseDto(myModules);
@@ -88,12 +100,28 @@ public class MyModuleService {
         List<MyModule> myModules = myModuleRepository.findByProjectAndModuleNameContainingIgnoreCase(
             project, query);
 
-        List<MyModuleResponseDto> myModuleDtos = myModules.stream().map(
-            myModule -> new MyModuleResponseDto(myModule.getId(), project.getId(),
-                myModule.getModule().getId(), myModule.getModule().getName(),
-                myModule.getModule().getCapacity(), myModule.getModule().getSerialNumber(),
-                myModule.getModule().getIsoImage() != null ? myModule.getModule().getIsoImage()
-                    .getImageUrl() : null, myModule.getQuantity())).collect(Collectors.toList());
+        List<MyModuleResponseDto> myModuleDtos = myModules.stream().map(myModule -> {
+            Module module = myModule.getModule();
+            Category subCategory = module.getCategory();
+            Category mainCategory = subCategory.getParentCategory();
+            String size = module.getWidth() + "*" + module.getHeight();
+
+            return new MyModuleResponseDto(
+                myModule.getId(),
+                project.getId(),
+                module.getId(),
+                module.getName(),
+                module.getCapacity(),
+                module.getSerialNumber(),
+                module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null,
+                myModule.getQuantity(),
+                subCategory.getName(),
+                mainCategory != null ? mainCategory.getName() : null,
+                size,
+                module.getMaterials(),
+                module.getPrice()
+            );
+        }).collect(Collectors.toList());
 
         return new MyModuleSearchResultDto(project.getId(), query, myModuleDtos);
     }
