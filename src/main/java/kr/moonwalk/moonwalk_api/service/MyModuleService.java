@@ -136,7 +136,7 @@ public class MyModuleService {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
 
-        Module module = moduleRepository.findById(myModuleAddDto.getModuleId())
+        Module module = moduleRepository.findByIdWithCategory(myModuleAddDto.getModuleId())
             .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
 
         MyModule myModule = myModuleRepository.findByProjectAndModule(project, module)
@@ -160,8 +160,14 @@ public class MyModuleService {
         project.updateEstimatedTotalPrice();
         projectRepository.save(project);
 
-        return new MyModuleAddResponseDto(module.getId(), module.getName(), project.getId(),
-            myModule.getQuantity(), myModule.getUsedQuantity());
+        return new MyModuleAddResponseDto(
+            module.getId(),
+            module.getName(),
+            module.getCategory().getName(),
+            project.getId(),
+            myModule.getQuantity(),
+            myModule.getUsedQuantity()
+        );
     }
 
     @Transactional

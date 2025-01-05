@@ -12,6 +12,8 @@ public class MyModuleAddResponseDto {
 
     private String moduleName;
 
+    private String categoryName;
+
     private Long projectId;
 
     private int quantity;
