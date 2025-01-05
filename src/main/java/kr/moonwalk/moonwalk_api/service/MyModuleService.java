@@ -140,16 +140,21 @@ public class MyModuleService {
             .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
 
         MyModule myModule = myModuleRepository.findByProjectAndModule(project, module)
-            .orElseGet(() -> new MyModule(project, module, myModuleAddDto.getQuantity()));
+            .orElseGet(() -> new MyModule(project, module, 0));
 
-        if (myModule.getId() != null) {
-            if (myModule.getUsedQuantity() > myModuleAddDto.getQuantity()) {
-                throw new IllegalArgumentException(
-                    "변경하려는 모듈 수량이 이미 사용된 수량보다 적습니다. (이미 사용된 수량: " + myModule.getUsedQuantity()
-                        + ", 입력된 수량: " + myModuleAddDto.getQuantity() + ")");
-            }
-            myModule.setQuantity(myModuleAddDto.getQuantity());
+        int newQuantity = myModule.getQuantity() + myModuleAddDto.getQuantity();
+
+        if (newQuantity < 0) {
+            throw new IllegalArgumentException("수량은 0보다 작을 수 없습니다.");
         }
+
+        if (myModule.getId() != null && myModule.getUsedQuantity() > newQuantity) {
+            throw new IllegalArgumentException(
+                "변경하려는 모듈 수량이 이미 사용된 수량보다 적습니다. (이미 사용된 수량: " + myModule.getUsedQuantity()
+                    + ", 변경 후 수량: " + newQuantity + ")");
+        }
+
+        myModule.setQuantity(newQuantity);
         myModuleRepository.save(myModule);
 
         project.updateEstimatedTotalPrice();
