@@ -164,6 +164,9 @@ public class MyModuleService {
             module.getId(),
             module.getName(),
             module.getCategory().getName(),
+            module.getCategory().getParentCategory() != null
+                ? module.getCategory().getParentCategory().getName()
+                : null,
             project.getId(),
             myModule.getQuantity(),
             myModule.getUsedQuantity()

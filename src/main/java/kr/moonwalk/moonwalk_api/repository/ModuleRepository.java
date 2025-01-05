@@ -22,6 +22,6 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
     @Query("SELECT m FROM Module m JOIN FETCH m.category c WHERE c.id IN :categoryIds AND c.type = :type")
     List<Module> findByCategoryIdsAndType(@Param("categoryIds") List<Long> categoryIds, @Param("type") Category.Type type);
 
-    @Query("SELECT m FROM Module m JOIN FETCH m.category WHERE m.id = :moduleId")
+    @Query("SELECT m FROM Module m JOIN FETCH m.category c LEFT JOIN FETCH c.parentCategory WHERE m.id = :moduleId")
     Optional<Module> findByIdWithCategory(@Param("moduleId") Long moduleId);
 }

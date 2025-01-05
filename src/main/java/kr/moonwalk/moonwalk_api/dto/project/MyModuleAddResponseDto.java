@@ -12,7 +12,9 @@ public class MyModuleAddResponseDto {
 
     private String moduleName;
 
-    private String categoryName;
+    private String category;
+
+    private String parentCategory;
 
     private Long projectId;
 
