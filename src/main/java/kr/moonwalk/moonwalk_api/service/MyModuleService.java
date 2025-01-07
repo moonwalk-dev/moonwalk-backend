@@ -145,7 +145,7 @@ public class MyModuleService {
         int newQuantity = myModule.getQuantity() + myModuleAddDto.getQuantity();
 
         if (newQuantity < 0) {
-            throw new IllegalArgumentException("수량은 0보다 작을 수 없습니다.");
+            throw new IllegalArgumentException("수량은 0보다 작을 수 없습니다. 기존 마이모듈 개수 : " + myModule.getQuantity() + "요청 개수 : " + myModuleAddDto.getQuantity());
         }
 
         if (myModule.getId() != null && myModule.getUsedQuantity() > newQuantity) {
