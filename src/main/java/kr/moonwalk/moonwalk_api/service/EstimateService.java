@@ -9,13 +9,14 @@ import kr.moonwalk.moonwalk_api.domain.Estimate;
 import kr.moonwalk.moonwalk_api.domain.Module;
 import kr.moonwalk.moonwalk_api.domain.Mood;
 import kr.moonwalk.moonwalk_api.domain.User;
-import kr.moonwalk.moonwalk_api.dto.estimate.CartListAddDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartAddResponseDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.CartListAddDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartListAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mood.EstimateMoodResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mypage.EstimateInfoDto;
@@ -48,13 +49,13 @@ public class EstimateService {
 
 
     @Transactional
-    public EstimateCreateDto createEstimate() {
+    public EstimateCreateResponseDto createEstimate(EstimateCreateDto dto) {
         User user = authService.getCurrentAuthenticatedUser();
 
-        Estimate estimate = new Estimate(user);
+        Estimate estimate = new Estimate(user, dto.getTitle(), dto.getClient(), dto.getArea());
         Estimate savedEstimate = estimateRepository.save(estimate);
 
-        return new EstimateCreateDto(savedEstimate.getId());
+        return new EstimateCreateResponseDto(savedEstimate.getId());
     }
 
     @Transactional

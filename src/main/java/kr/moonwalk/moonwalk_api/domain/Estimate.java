@@ -39,6 +39,8 @@ public class Estimate {
     private User user;
 
     private String title;
+    private String client;
+    private String area;
 
     private int totalPrice;
 
@@ -47,13 +49,14 @@ public class Estimate {
     @OneToMany(mappedBy = "estimate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cart> carts = new ArrayList<>();
 
-    public Estimate(User user) {
+    public Estimate(User user, String title, String client, String area) {
         this.user = user;
         this.totalPrice = 0;
         this.createdAt = LocalDateTime.now();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        this.title = "Estimate - " + this.createdAt.format(formatter);
+        this.title = title;
+        this.client = client;
+        this.area = area;
 
         user.getEstimates().add(this);
     }

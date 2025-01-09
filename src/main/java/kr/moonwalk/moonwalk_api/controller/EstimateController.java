@@ -9,6 +9,7 @@ import kr.moonwalk.moonwalk_api.dto.estimate.CartListAddDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartListAddResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.CartListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateDto;
+import kr.moonwalk.moonwalk_api.dto.estimate.EstimateCreateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.estimate.EstimateResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mood.EstimateMoodResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mypage.EstimateInfoListDto;
@@ -34,8 +35,8 @@ public class EstimateController {
 
     @Operation(summary = "간단 견적 생성", description = "헤더에 있는 토큰을 확인하여 사용자 정보를 추출한 후, 해당 사용자의 새로운 간단 견적을 생성합니다.")
     @PostMapping
-    public ResponseEntity<EstimateCreateDto> createEstimate() {
-        EstimateCreateDto response = estimateService.createEstimate();
+    public ResponseEntity<EstimateCreateResponseDto> createEstimate(@RequestBody EstimateCreateDto dto) {
+        EstimateCreateResponseDto response = estimateService.createEstimate(dto);
         return ResponseEntity.ok(response);
     }
 
