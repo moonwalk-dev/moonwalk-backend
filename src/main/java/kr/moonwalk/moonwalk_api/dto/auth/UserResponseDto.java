@@ -1,6 +1,7 @@
 package kr.moonwalk.moonwalk_api.dto.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import kr.moonwalk.moonwalk_api.domain.User.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,7 @@ public class UserResponseDto {
     private String username;
 
     private String email;
+
+    private Role role;
 
 }

@@ -51,7 +51,7 @@ public class AuthService {
         User user = new User(registrationDto.getUsername(), registrationDto.getEmail(), encodedPassword, Role.ROLE_USER);
         User savedUser = userRepository.save(user);
 
-        return new UserResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
+        return new UserResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail(), savedUser.getRole());
     }
 
     @Transactional
@@ -75,7 +75,7 @@ public class AuthService {
             LocalDateTime.now().plusDays(30));
         refreshTokenRepository.save(refreshTokenEntity);
 
-        return new LoginResponse(user.getUsername(), accessToken);
+        return new LoginResponse(user.getUsername(), user.getRole(), accessToken);
     }
 
     @Transactional
@@ -168,6 +168,6 @@ public class AuthService {
 
     public UserResponseDto getInfo() {
         User user = getCurrentAuthenticatedUser();
-        return new UserResponseDto(user.getId(), user.getUsername(), user.getEmail());
+        return new UserResponseDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 }
