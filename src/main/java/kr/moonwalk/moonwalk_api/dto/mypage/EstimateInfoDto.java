@@ -15,7 +15,7 @@ public class EstimateInfoDto {
 
     private String client;
 
-    private String areat;
+    private String area;
 
     private int totalPrice;
 
