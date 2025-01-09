@@ -228,7 +228,7 @@ public class EstimateService {
         User user = authService.getCurrentAuthenticatedUser();
 
         List<EstimateInfoDto> estimates = user.getEstimates().stream().map(
-                estimate -> new EstimateInfoDto(estimate.getId(), estimate.getTitle(),
+                estimate -> new EstimateInfoDto(estimate.getId(), estimate.getTitle(), estimate.getClient(), estimate.getArea(),
                     estimate.getTotalPrice(), estimate.getCreatedAt(), estimate.getMood() != null ? estimate.getMood().getId()
                     : null))
             .collect(Collectors.toList());

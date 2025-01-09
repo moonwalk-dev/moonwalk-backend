@@ -13,6 +13,10 @@ public class EstimateInfoDto {
 
     private String title;
 
+    private String client;
+
+    private String areat;
+
     private int totalPrice;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
