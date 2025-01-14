@@ -34,7 +34,7 @@ public class GuideLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (guideRepository.count() == 0) {
 
-            String bucketName = "moonwalk-project";
+            String bucketName = "moonwalk-images";
             String baseFolder = "guides/";
 
             Category businessSpaceCategory = categoryRepository.findByNameAndType("업무공간", Type.TYPE_OFFICE).orElseThrow();

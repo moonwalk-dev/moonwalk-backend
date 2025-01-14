@@ -235,14 +235,14 @@ public class ModuleLoader implements CommandLineRunner {
     }
 
     private Image getImageByType(String folderPath, String serialNumber, String type) {
-        List<String> keys = getS3ImagesFromFolder("moonwalk-project", folderPath);
+        List<String> keys = getS3ImagesFromFolder("moonwalk-images", folderPath);
         String imageKey = keys.stream()
             .filter(key -> key.contains(serialNumber + "_" + type))
             .filter(key -> key.matches(".*\\.(png|jpg|jpeg|gif)$"))
             .findFirst()
             .orElse(null);
 
-        return imageKey != null ? new Image(getS3ObjectUrl("moonwalk-project", imageKey)) : null;
+        return imageKey != null ? new Image(getS3ObjectUrl("moonwalk-images", imageKey)) : null;
     }
 
     private List<String> getS3ImagesFromFolder(String bucketName, String folderPath) {

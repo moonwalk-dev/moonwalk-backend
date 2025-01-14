@@ -28,7 +28,7 @@ public class MoodLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (moodRepository.count() == 0) {
 
-            String bucketName = "moonwalk-project";
+            String bucketName = "moonwalk-images";
             String baseFolder = "moods/";
 
             Image coverImageNatural = getCoverImage(bucketName, baseFolder + "natural/");
