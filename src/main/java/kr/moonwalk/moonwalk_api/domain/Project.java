@@ -38,6 +38,8 @@ public class Project {
     private String client;
     private String area;
     private LocalDateTime createdAt;
+
+    @Column(columnDefinition = "TEXT")
     private String canvas;
 
     @ManyToOne(fetch = LAZY)
