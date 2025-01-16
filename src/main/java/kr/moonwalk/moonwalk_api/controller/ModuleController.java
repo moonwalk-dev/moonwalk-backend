@@ -83,7 +83,7 @@ public class ModuleController {
     @PatchMapping(value = "/{moduleId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ModuleSaveResponseDto> updateModule(@PathVariable Long moduleId,
-        @RequestPart(value = "moduleDto", required = false) ModuleSaveDto moduleDto,
+        @RequestPart(value = "module", required = false) ModuleSaveDto moduleDto,
         @RequestPart(value = "topImage", required = false) MultipartFile topImageFile,
         @RequestPart(value = "isoImage", required = false) MultipartFile isoImageFile) {
 
