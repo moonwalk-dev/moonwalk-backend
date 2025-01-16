@@ -11,6 +11,7 @@ import kr.moonwalk.moonwalk_api.exception.notfound.ModuleNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.MoodNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ProjectModuleNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.ProjectNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -134,5 +135,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<String> handleMaxSizeException(MaxUploadSizeExceededException exc) {
         return ResponseEntity.badRequest().body("파일 크기가 허용된 최대 크기(25MB)를 초과했습니다!");
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
+        DataIntegrityViolationException ex) {
+        String message = "이 모듈은 다른 곳에서 사용중이어서 삭제할 수 없습니다.";
+        ErrorResponse errorResponse = new ErrorResponse(message, "MODULE_IN_USE");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 }
