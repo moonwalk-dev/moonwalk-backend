@@ -83,6 +83,8 @@ public class GuideLoader implements CommandLineRunner {
                     List.of("가변공간", "회의실", "다용도"), "align_meetingroom", bucketName, baseFolder, conferenceSpaceCategory),
                 createGuide("스피어팟", "비대면 협업에 최적화된 조명, 카메라, 모니터 배치",
                     List.of("비대면 회의", "1인 회의실", "단독 공간"), "sphere_pod", bucketName, baseFolder, conferenceSpaceCategory),
+                createGuide("스탠딩 미팅 포인트", "좌석 없이 간단하게 미팅할 수 있는 공간",
+                    List.of("협업", "퀵미팅"), "standing_meeting_point", bucketName, baseFolder, conferenceSpaceCategory),
                 createGuide("티키타카 회의실", "상석이 없는 원형 테이블에서 자유롭게 브레인스토밍할 수 있는 공간",
                     List.of("브레인스토밍", "원형테이블", "수평적 관계"), "tikitaka_meetingroom", bucketName, baseFolder, conferenceSpaceCategory),
 
@@ -113,7 +115,7 @@ public class GuideLoader implements CommandLineRunner {
                     List.of("촬영", "방음"), "studio", bucketName, baseFolder, miscellaneousSpaceCategory),
                 createGuide("홍보 전시관", "기업의 연혁 및 소개할 수 있는 홍보 전시공간",
                     List.of("연혁", "아이덴티티"), "exhibition_hall", bucketName, baseFolder, miscellaneousSpaceCategory),
-                createGuide("릴렉스룸", "안마의자 또는 리클라이너가 배치되어 편안하게 휴식을 취할 수 있는 공간",
+                createGuide("릴렉스존", "안마의자 또는 리클라이너가 배치되어 편안하게 휴식을 취할 수 있는 공간",
                     List.of("휴식", "방음", "1인"), "relax_room", bucketName, baseFolder, miscellaneousSpaceCategory),
                 createGuide("게이밍존", "동료들과 간단한 스포츠 활동이나 게임을 즐길 수 있는 공간",
                     List.of("휴식", "교류", "게임"), "gaming_zone", bucketName, baseFolder, miscellaneousSpaceCategory),
