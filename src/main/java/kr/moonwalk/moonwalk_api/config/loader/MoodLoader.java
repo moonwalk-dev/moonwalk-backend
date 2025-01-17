@@ -36,37 +36,38 @@ public class MoodLoader implements CommandLineRunner {
             Image coverImageCasual = getCoverImage(bucketName, baseFolder + "casual/");
             Image coverImageHighEnd = getCoverImage(bucketName, baseFolder + "highend/");
             Image coverImageHighTech = getCoverImage(bucketName, baseFolder + "hightech/");
-            Image coverImageCreative = getCoverImage(bucketName, baseFolder + "creative/");
+//            Image coverImageCreative = getCoverImage(bucketName, baseFolder + "creative/");
 
             List<Image> detailImagesNatural = getDetailImages(bucketName, baseFolder + "natural/");
             List<Image> detailImagesModern = getDetailImages(bucketName, baseFolder + "modern/");
             List<Image> detailImagesCasual = getDetailImages(bucketName, baseFolder + "casual/");
             List<Image> detailImagesHighEnd = getDetailImages(bucketName, baseFolder + "highend/");
             List<Image> detailImagesHighTech = getDetailImages(bucketName, baseFolder + "hightech/");
-            List<Image> detailImagesCreative = getDetailImages(bucketName, baseFolder + "creative/");
+//            List<Image> detailImagesCreative = getDetailImages(bucketName, baseFolder + "creative/");
 
             Mood naturalMood = new Mood("내추럴", "따뜻하고 자연스러운 분위기");
             Mood modernMood = new Mood("모던", "세련되고 심플한 분위기");
             Mood casualMood = new Mood("캐주얼", "편안하고 가벼운 분위기");
             Mood highEndMood = new Mood("하이엔드", "고급스럽고 정교한 분위기");
             Mood highTechMood = new Mood("하이테크", "첨단 기술과 차가운 메탈 느낌의 분위기");
-            Mood creativeMood = new Mood("크리에이티브", "독창적이고 예술적인 분위기");
+//            Mood creativeMood = new Mood("크리에이티브", "독창적이고 예술적인 분위기");
 
             naturalMood.setCoverImage(coverImageNatural);
             modernMood.setCoverImage(coverImageModern);
             casualMood.setCoverImage(coverImageCasual);
             highEndMood.setCoverImage(coverImageHighEnd);
             highTechMood.setCoverImage(coverImageHighTech);
-            creativeMood.setCoverImage(coverImageCreative);
+//            creativeMood.setCoverImage(coverImageCreative);
 
             naturalMood.addDetailImages(detailImagesNatural);
             modernMood.addDetailImages(detailImagesModern);
             casualMood.addDetailImages(detailImagesCasual);
             highEndMood.addDetailImages(detailImagesHighEnd);
             highTechMood.addDetailImages(detailImagesHighTech);
-            creativeMood.addDetailImages(detailImagesCreative);
+//            creativeMood.addDetailImages(detailImagesCreative);
 
-            moodRepository.saveAll(List.of(naturalMood, modernMood, casualMood, highEndMood, highTechMood, creativeMood));
+//            moodRepository.saveAll(List.of(naturalMood, modernMood, casualMood, highEndMood, highTechMood, creativeMood));
+            moodRepository.saveAll(List.of(naturalMood, modernMood, casualMood, highEndMood, highTechMood));
         }
     }
 
