@@ -14,12 +14,12 @@ services:
     env_file: .env
     ports:
       - "8080:8080"
-    volumes:
-      - ./app.jar:/app/app.jar
+    # volumes:
+    #   - ./app.jar:/app/app.jar
     depends_on:
       - db
     restart: always
     command: ["java", "-jar", "/app/app.jar"]
 
-volumes:
-  moonwalk_db:
+# volumes:
+#   moonwalk_db:
