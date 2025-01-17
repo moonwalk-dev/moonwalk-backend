@@ -54,15 +54,15 @@ public class GuideLoader implements CommandLineRunner {
                 createGuide("포커스존(개방형)", "1인 좌석과 간이 데스크로 구성된 오픈형 이동식 업무 공간",
                     List.of("집중", "1인업무"), "focuszone_open", bucketName, baseFolder, businessSpaceCategory),
                 createGuide("어라운드존", "창가나 가장자리 부분에 바타입 형태의 집중 업무공간",
-                    List.of("집중", "자율 자석"), "aroundzone", bucketName, baseFolder, businessSpaceCategory),
-                createGuide("모션데스크존", "모션데스크를 활용한 개인 맞춤형 업무공간",
-                    List.of("집중", "1인업무", "높낮이 조절"), "motiondesk", bucketName, baseFolder, businessSpaceCategory),
+                    List.of("집중", "자율 자석"), "around_zone", bucketName, baseFolder, businessSpaceCategory),
+                // createGuide("모션데스크존", "모션데스크를 활용한 개인 맞춤형 업무공간",
+                //     List.of("집중", "1인업무", "높낮이 조절"), "motiondesk", bucketName, baseFolder, businessSpaceCategory),
                 createGuide("콜라보레이션 허브", "다른 팀이나 기업의 직원들이 한 시설과 서비스를 공유하는 공간",
                     List.of("원격 근무", "온라인 협업체계 한계 해결", "공유오피스"), "collaboration_hub", bucketName, baseFolder, businessSpaceCategory),
                 createGuide("코워킹공간", "기업의 직원들을 한 곳에 모아 팀워크, 창의성, 자기개발을 돕는 공간",
                     List.of("개인", "생산성 향상", "공유공간"), "coworking_space", bucketName, baseFolder, businessSpaceCategory),
-                createGuide("OA부스", "프린터, 복합기, 문서분쇄기를 사용하는 독립된 공간",
-                    List.of("프린트", "업무 보조", "출력", "기자재", "문구"), "oa_booth", bucketName, baseFolder, businessSpaceCategory),
+                // createGuide("OA부스", "프린터, 복합기, 문서분쇄기를 사용하는 독립된 공간",
+                //     List.of("프린트", "업무 보조", "출력", "기자재", "문구"), "oa_booth", bucketName, baseFolder, businessSpaceCategory),
                 createGuide("이동형 OA부스", "컴팩트한 사이즈에 바퀴가 달린 OA부스를 통해 자유롭게 이동 가능",
                     List.of("이동식", "자유로움", "재배치"), "mobile_oa_booth", bucketName, baseFolder, businessSpaceCategory),
 
@@ -89,8 +89,8 @@ public class GuideLoader implements CommandLineRunner {
                     List.of("브레인스토밍", "원형테이블", "수평적 관계"), "tikitaka_meetingroom", bucketName, baseFolder, conferenceSpaceCategory),
 
                 // 커뮤니티 공간
-                createGuide("인포메이션", "기업을 처음 맞이하는 공간으로",
-                    List.of("안내", "메인이미지월"), "information", bucketName, baseFolder, communitySpaceCategory),
+                // createGuide("인포메이션", "기업을 처음 맞이하는 공간으로",
+                //     List.of("안내", "메인이미지월"), "information", bucketName, baseFolder, communitySpaceCategory),
                 createGuide("워크 라운지", "하이브리드 근무 및 협업이 많은 기업에 필요한 자유로운 형태의 라운지형 업무공간",
                     List.of("자율좌석", "개인업무"), "work_lounge", bucketName, baseFolder, communitySpaceCategory),
                 createGuide("카페라운지", "소파, 의자, 테이블, 캔틴 등을 배치해 편안하게 휴식을 취할 수 있는 라운지",
@@ -103,12 +103,12 @@ public class GuideLoader implements CommandLineRunner {
                     List.of("인쇄", "복사"), "oa_zone", bucketName, baseFolder, facilitySpaceCategory),
                 createGuide("라커존", "개인소지품 및 외투등을 보관할 수 있는 공간. IoT스마트 솔루션을 도입한 스마트라커 도입이 가능하다",
                     List.of("수납", "보안"), "locker_zone", bucketName, baseFolder, facilitySpaceCategory),
-                createGuide("탕비실", "싱크대와 냉장고, 정수기 등 물을 끓이거나 그릇을 세척할 수 있도록 마련된 중소규모 공간",
-                    List.of("싱크", "물", "음식"), "pantry", bucketName, baseFolder, facilitySpaceCategory),
-                createGuide("서버룸", "별도의 항온항습이 필요한 서버 관리가 필요한 경우 별도의 실을 구성하여 운영",
-                    List.of("서버관리", "항온항습"), "server_room", bucketName, baseFolder, facilitySpaceCategory),
-                createGuide("창고", "각종 물품들을 보관할 수 있는 필수 공간",
-                    List.of("물품보관"), "storage", bucketName, baseFolder, facilitySpaceCategory),
+                // createGuide("탕비실", "싱크대와 냉장고, 정수기 등 물을 끓이거나 그릇을 세척할 수 있도록 마련된 중소규모 공간",
+                //     List.of("싱크", "물", "음식"), "pantry", bucketName, baseFolder, facilitySpaceCategory),
+                // createGuide("서버룸", "별도의 항온항습이 필요한 서버 관리가 필요한 경우 별도의 실을 구성하여 운영",
+                //     List.of("서버관리", "항온항습"), "server_room", bucketName, baseFolder, facilitySpaceCategory),
+                // createGuide("창고", "각종 물품들을 보관할 수 있는 필수 공간",
+                //     List.of("물품보관"), "storage", bucketName, baseFolder, facilitySpaceCategory),
 
                 // 기타 공간
                 createGuide("스튜디오", "기업의 제품이나 컨텐츠를 자체 촬영할 수 있는 공간. 촬영장비, 소품 등을 보관할 수 있는 창고도 함께 구축할 수 있다",
@@ -176,7 +176,7 @@ public class GuideLoader implements CommandLineRunner {
         ListObjectsV2Result result = amazonS3.listObjectsV2(request);
         return result.getObjectSummaries().stream()
             .map(S3ObjectSummary::getKey)
-            .filter(key -> key.matches(".*\\.(png|jpg|jpeg|gif)$"))
+            .filter(key -> key.matches(".*\\.(png|PNG|jpg|jpeg|gif)$"))
             .collect(Collectors.toList());
     }
 
