@@ -1,7 +1,7 @@
 package kr.moonwalk.moonwalk_api.dto.module;
 
 import java.util.List;
-import lombok.AllArgsConstructor;
+import java.text.NumberFormat;
 import lombok.Getter;
 
 @Getter
