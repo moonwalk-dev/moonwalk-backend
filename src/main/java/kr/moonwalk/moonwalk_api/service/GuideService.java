@@ -33,18 +33,21 @@ public class GuideService {
 
     @Transactional(readOnly = true)
     public CategoryGuidesResponseDto getGuidesByCategoryName(String categoryName) {
+        if (categoryName == null) {
+            List<CategoryGuideDto> allGuides = guideRepository.findAll().stream()
+                .map(guide -> new CategoryGuideDto(guide.getId(), guide.getName(),
+                    guide.getCoverImage() != null ? guide.getCoverImage().getImageUrl() : null))
+                .collect(Collectors.toList());
+            return new CategoryGuidesResponseDto("전체", allGuides);
+        }
 
         Category category = categoryRepository.findByNameAndType(categoryName, Type.TYPE_OFFICE)
             .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
 
-        List<CategoryGuideDto> guideDtos = null;
-        if (category != null) {
-            guideDtos = guideRepository.findByCategory(category).stream().map(
-                guide -> new CategoryGuideDto(guide.getId(), guide.getName(),
-                    guide.getCoverImage() != null ? guide.getCoverImage().getImageUrl()
-                        : null)).collect(Collectors.toList());
-
-        }
+        List<CategoryGuideDto> guideDtos = guideRepository.findByCategory(category).stream()
+            .map(guide -> new CategoryGuideDto(guide.getId(), guide.getName(),
+                guide.getCoverImage() != null ? guide.getCoverImage().getImageUrl() : null))
+            .collect(Collectors.toList());
 
         return new CategoryGuidesResponseDto(category.getName(), guideDtos);
     }

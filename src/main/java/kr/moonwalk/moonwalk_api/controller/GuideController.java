@@ -33,7 +33,7 @@ public class GuideController {
     @Operation(summary = "카테고리 별 오피스가이드 조회")
     @GetMapping
     public ResponseEntity<CategoryGuidesResponseDto> getGuidesByCategory(
-        @RequestParam String categoryName) {
+        @RequestParam(required = false) String categoryName) {
 
         CategoryGuidesResponseDto response = guideService.getGuidesByCategoryName(categoryName);
         return ResponseEntity.ok(response);
