@@ -7,15 +7,16 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class MoodResponseDto {
-
     private Long id;
-
     private String name;
-
     private String description;
+    private ImageDto coverImage;
+    private List<ImageDto> detailImages;
 
-    private String coverImage;
-
-    private List<String> detailImages;
-
+    @Getter
+    @AllArgsConstructor
+    public static class ImageDto {
+        private Long id;
+        private String url;
+    }
 }

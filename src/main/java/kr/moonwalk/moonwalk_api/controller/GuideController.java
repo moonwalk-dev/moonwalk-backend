@@ -67,12 +67,32 @@ public class GuideController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GuideSaveResponseDto> updateGuide(@PathVariable Long id,
         @RequestPart(value = "guide", required = false) GuideSaveDto guideDto,
-        @RequestPart(value = "coverImage", required = false) MultipartFile coverImageFile,
-        @RequestPart(value = "detailImages", required = false) List<MultipartFile> detailImageFiles) {
+        @RequestPart(value = "coverImage", required = false) MultipartFile coverImageFile) {
 
-        GuideSaveResponseDto response = guideService.updateGuide(id, guideDto, coverImageFile,
-            detailImageFiles);
+        GuideSaveResponseDto response = guideService.updateGuide(id, guideDto, coverImageFile);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "관리자 전용 오피스가이드 상세이미지 추가")
+    @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<GuideResponseDto> addDetailImages(
+        @PathVariable Long id,
+        @RequestPart("detailImages") List<MultipartFile> detailImageFiles) {
+
+        GuideResponseDto response = guideService.addDetailImages(id, detailImageFiles);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "관리자 전용 오피스가이드 상세이미지 삭제")
+    @DeleteMapping("/{id}/images/{imageId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteDetailImage(
+        @PathVariable Long id,
+        @PathVariable Long imageId) {
+
+        guideService.deleteDetailImage(id, imageId);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "특정 오피스가이드 조회")

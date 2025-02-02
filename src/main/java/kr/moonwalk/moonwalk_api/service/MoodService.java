@@ -11,6 +11,7 @@ import kr.moonwalk.moonwalk_api.dto.mood.MoodResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mood.MoodSaveDto;
 import kr.moonwalk.moonwalk_api.dto.mood.MoodSaveResponseDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.MoodNotFoundException;
+import kr.moonwalk.moonwalk_api.repository.ImageRepository;
 import kr.moonwalk.moonwalk_api.repository.MoodRepository;
 import kr.moonwalk.moonwalk_api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class MoodService {
 
     private final MoodRepository moodRepository;
     private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
     @Transactional(readOnly = true)
     public MoodListResponseDto getAllMoods() {
@@ -43,18 +45,24 @@ public class MoodService {
         Mood mood = moodRepository.findById(moodId)
             .orElseThrow(() -> new MoodNotFoundException("무드를 찾을 수 없습니다."));
 
-        String coverImageUrl = (mood.getCoverImage() != null) ? mood.getCoverImage().getImageUrl() : null;
+        MoodResponseDto.ImageDto coverImageDto = null;
+        if (mood.getCoverImage() != null) {
+            coverImageDto = new MoodResponseDto.ImageDto(
+                mood.getCoverImage().getId(),
+                mood.getCoverImage().getImageUrl()
+            );
+        }
 
-        List<String> detailImageUrls = mood.getDetailImages().stream()
-            .map(Image::getImageUrl)
+        List<MoodResponseDto.ImageDto> detailImageDtos = mood.getDetailImages().stream()
+            .map(image -> new MoodResponseDto.ImageDto(image.getId(), image.getImageUrl()))
             .collect(Collectors.toList());
 
         return new MoodResponseDto(
             mood.getId(),
             mood.getName(),
             mood.getDescription(),
-            coverImageUrl,
-            detailImageUrls
+            coverImageDto,
+            detailImageDtos
         );
     }
 
@@ -97,11 +105,49 @@ public class MoodService {
     }
 
     @Transactional
-    public MoodSaveResponseDto updateMood(Long moodId, MoodSaveDto moodDto, MultipartFile coverImageFile,
-        List<MultipartFile> detailImageFiles) {
-
+    public void deleteDetailImage(Long moodId, Long imageId) {
         Mood mood = moodRepository.findById(moodId)
-            .orElseThrow(() -> new MoodNotFoundException("오피스가이드를 찾을 수 없습니다."));
+            .orElseThrow(() -> new MoodNotFoundException("무드를 찾을 수 없습니다."));
+
+        Image image = imageRepository.findById(imageId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 이미지를 찾을 수 없습니다."));
+
+        if (!mood.getDetailImages().contains(image)) {
+            throw new IllegalArgumentException("해당 이미지가 이 무드에 속하지 않습니다.");
+        }
+
+        mood.getDetailImages().remove(image);
+        imageService.deleteImage(image);
+    }
+
+    @Transactional
+    public MoodResponseDto addDetailImages(Long moodId, List<MultipartFile> detailImageFiles) {
+        Mood mood = moodRepository.findById(moodId)
+            .orElseThrow(() -> new MoodNotFoundException("무드를 찾을 수 없습니다."));
+
+        List<Image> newImages = new ArrayList<>();
+        int currentImageCount = mood.getDetailImages().size();
+
+        for (int i = 0; i < detailImageFiles.size(); i++) {
+            MultipartFile file = detailImageFiles.get(i);
+            String extension = FileUtil.getFileExtension(file.getOriginalFilename());
+            String imagePath = String.format("moods/%s/detail%d.%s",
+                mood.getName(),
+                currentImageCount + i + 1,
+                extension);
+            Image image = imageService.uploadAndSaveImage(file, imagePath);
+            newImages.add(image);
+        }
+
+        mood.addDetailImages(newImages);
+
+        return getInfo(moodId);
+    }
+
+    @Transactional
+    public MoodSaveResponseDto updateMood(Long moodId, MoodSaveDto moodDto, MultipartFile coverImageFile) {
+        Mood mood = moodRepository.findById(moodId)
+            .orElseThrow(() -> new MoodNotFoundException("무드를 찾을 수 없습니다."));
 
         if (moodDto != null) {
             if (moodDto.getName() != null) mood.updateName(moodDto.getName());
@@ -111,27 +157,8 @@ public class MoodService {
         if (coverImageFile != null) {
             String coverExtension = FileUtil.getFileExtension(coverImageFile.getOriginalFilename());
             String coverImagePath = "moods/" + mood.getName() + "/cover." + coverExtension;
-            mood.setCoverImage(null);
             Image updatedCoverImage = imageService.updateImage(coverImageFile, coverImagePath, mood.getCoverImage());
             mood.setCoverImage(updatedCoverImage);
-        }
-
-        if (detailImageFiles != null && !detailImageFiles.isEmpty()) {
-            List<Image> existingDetailImages = mood.getDetailImages();
-            mood.getDetailImages().clear();
-            for (Image existingImage : existingDetailImages) {
-                imageService.deleteImage(existingImage);
-            }
-
-            List<Image> newDetailImages = new ArrayList<>();
-            for (int i = 0; i < detailImageFiles.size(); i++) {
-                MultipartFile file = detailImageFiles.get(i);
-                String detailExtension = FileUtil.getFileExtension(file.getOriginalFilename());
-                String detailImagePath = "moods/" + mood.getName() + "/detail" + (i + 1) + "." + detailExtension;
-                Image newDetailImage = imageService.uploadAndSaveImage(file, detailImagePath);
-                newDetailImages.add(newDetailImage);
-            }
-            mood.addDetailImages(newDetailImages);
         }
 
         moodRepository.save(mood);

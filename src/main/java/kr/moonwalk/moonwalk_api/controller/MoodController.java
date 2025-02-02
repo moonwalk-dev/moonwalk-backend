@@ -70,16 +70,37 @@ public class MoodController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "관리자 전용 무드 수정", description = "변경하고자 하는 필드만 요청에 포함하면 되며, 포함되지 않은 필드는 기존 값이 유지됩니다.")
+    @Operation(summary = "관리자 전용 무드 수정")
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<MoodSaveResponseDto> updateMood(@PathVariable Long id,
+    public ResponseEntity<MoodSaveResponseDto> updateMood(
+        @PathVariable Long id,
         @RequestPart(value = "mood", required = false) MoodSaveDto moodDto,
-        @RequestPart(value = "coverImage", required = false) MultipartFile coverImageFile,
-        @RequestPart(value = "detailImages", required = false) List<MultipartFile> detailImageFiles) {
+        @RequestPart(value = "coverImage", required = false) MultipartFile coverImageFile) {
 
-        MoodSaveResponseDto response = moodService.updateMood(id, moodDto, coverImageFile,
-            detailImageFiles);
+        MoodSaveResponseDto response = moodService.updateMood(id, moodDto, coverImageFile);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "관리자 전용 오피스 무드 상세이미지 추가")
+    @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MoodResponseDto> addDetailImages(
+        @PathVariable Long id,
+        @RequestPart("detailImages") List<MultipartFile> detailImageFiles) {
+
+        MoodResponseDto response = moodService.addDetailImages(id, detailImageFiles);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "관리자 전용 오피스 무드 상세이미지 삭제")
+    @DeleteMapping("/{id}/images/{imageId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteDetailImage(
+        @PathVariable Long id,
+        @PathVariable Long imageId) {
+
+        moodService.deleteDetailImage(id, imageId);
+        return ResponseEntity.noContent().build();
     }
 }

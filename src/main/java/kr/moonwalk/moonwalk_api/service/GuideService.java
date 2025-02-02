@@ -16,6 +16,7 @@ import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.GuideNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
 import kr.moonwalk.moonwalk_api.repository.GuideRepository;
+import kr.moonwalk.moonwalk_api.repository.ImageRepository;
 import kr.moonwalk.moonwalk_api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class GuideService {
     private final GuideRepository guideRepository;
     private final CategoryRepository categoryRepository;
     private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
 
     @Transactional(readOnly = true)
@@ -91,14 +93,19 @@ public class GuideService {
 
     @Transactional(readOnly = true)
     public GuideResponseDto getInfo(Long guideId) {
-
         Guide guide = guideRepository.findById(guideId)
             .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
 
-        String coverImageUrl = (guide.getCoverImage() != null) ? guide.getCoverImage().getImageUrl() : null;
+        GuideResponseDto.ImageDto coverImageDto = null;
+        if (guide.getCoverImage() != null) {
+            coverImageDto = new GuideResponseDto.ImageDto(
+                guide.getCoverImage().getId(),
+                guide.getCoverImage().getImageUrl()
+            );
+        }
 
-        List<String> detailImageUrls = guide.getDetailImages().stream()
-            .map(Image::getImageUrl)
+        List<GuideResponseDto.ImageDto> detailImageDtos = guide.getDetailImages().stream()
+            .map(image -> new GuideResponseDto.ImageDto(image.getId(), image.getImageUrl()))
             .collect(Collectors.toList());
 
         return new GuideResponseDto(
@@ -106,8 +113,8 @@ public class GuideService {
             guide.getName(),
             guide.getDescription(),
             guide.getKeywords(),
-            coverImageUrl,
-            detailImageUrls
+            coverImageDto,
+            detailImageDtos
         );
     }
 
@@ -119,8 +126,7 @@ public class GuideService {
         guideRepository.delete(guide);
     }
 
-    public GuideSaveResponseDto updateGuide(Long guideId, GuideSaveDto guideDto, MultipartFile coverImageFile,
-        List<MultipartFile> detailImageFiles) {
+    public GuideSaveResponseDto updateGuide(Long guideId, GuideSaveDto guideDto, MultipartFile coverImageFile) {
 
         Guide guide = guideRepository.findById(guideId)
             .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
@@ -145,27 +151,45 @@ public class GuideService {
             guide.setCoverImage(updatedCoverImage);
         }
 
-        if (detailImageFiles != null && !detailImageFiles.isEmpty()) {
-            List<Image> existingDetailImages = guide.getDetailImages();
-            guide.getDetailImages().clear();
-            for (Image existingImage : existingDetailImages) {
-                imageService.deleteImage(existingImage);
-            }
-
-            List<Image> newDetailImages = new ArrayList<>();
-            for (int i = 0; i < detailImageFiles.size(); i++) {
-                MultipartFile file = detailImageFiles.get(i);
-                String detailExtension = FileUtil.getFileExtension(file.getOriginalFilename());
-                String detailImagePath = "guides/" + guide.getName() + "/detail" + (i + 1) + "." + detailExtension;
-                Image newDetailImage = imageService.uploadAndSaveImage(file, detailImagePath);
-                newDetailImages.add(newDetailImage);
-            }
-            guide.addDetailImages(newDetailImages);
-        }
-
         guideRepository.save(guide);
 
         return new GuideSaveResponseDto(guide.getId(), guide.getName(), guide.getDescription(), guide.getKeywords());
+    }
+
+    @Transactional
+    public GuideResponseDto addDetailImages(Long guideId, List<MultipartFile> detailImageFiles) {
+        Guide guide = guideRepository.findById(guideId)
+            .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
+
+        List<Image> newDetailImages = new ArrayList<>();
+        int currentImageCount = guide.getDetailImages().size();
+
+        for (int i = 0; i < detailImageFiles.size(); i++) {
+            MultipartFile file = detailImageFiles.get(i);
+            String detailExtension = FileUtil.getFileExtension(file.getOriginalFilename());
+            String detailImagePath = "guides/" + guide.getName() + "/detail" + (currentImageCount + i + 1) + "." + detailExtension;
+            Image newDetailImage = imageService.uploadAndSaveImage(file, detailImagePath);
+            newDetailImages.add(newDetailImage);
+        }
+        guide.addDetailImages(newDetailImages);
+
+        return getInfo(guideId);
+    }
+
+    @Transactional
+    public void deleteDetailImage(Long guideId, Long imageId) {
+        Guide guide = guideRepository.findById(guideId)
+            .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
+
+        Image image = imageRepository.findById(imageId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 이미지를 찾을 수 없습니다."));
+
+        if (!guide.getDetailImages().contains(image)) {
+            throw new IllegalArgumentException("해당 이미지가 이 가이드에 속하지 않습니다.");
+        }
+
+        guide.getDetailImages().remove(image);
+        imageService.deleteImage(image);
     }
 
 }

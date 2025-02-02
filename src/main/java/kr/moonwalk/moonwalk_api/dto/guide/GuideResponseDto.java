@@ -7,16 +7,17 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class GuideResponseDto {
-
     private Long id;
-
     private String name;
-
     private String description;
-
     private List<String> keywords;
+    private ImageDto coverImage;
+    private List<ImageDto> detailImages;
 
-    private String coverImage;
-
-    private List<String> detailImages;
+    @Getter
+    @AllArgsConstructor
+    public static class ImageDto {
+        private Long id;
+        private String url;
+    }
 }
