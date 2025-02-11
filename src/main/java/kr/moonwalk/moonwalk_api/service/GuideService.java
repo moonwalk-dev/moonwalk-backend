@@ -39,7 +39,7 @@ public class GuideService {
         if (categoryName == null) {
             List<CategoryGuideDto> allGuides = guideRepository.findAll().stream()
                 .map(guide -> new CategoryGuideDto(guide.getId(), guide.getName(),
-                    guide.getCoverImage() != null ? guide.getCoverImage().getImageUrl() : null))
+                    guide.getCoverImage() != null ? new ImageDto(guide.getCoverImage().getId(), guide.getCoverImage().getImageUrl()) : null))
                 .collect(Collectors.toList());
             return new CategoryGuidesResponseDto("전체", allGuides);
         }
@@ -49,7 +49,7 @@ public class GuideService {
 
         List<CategoryGuideDto> guideDtos = guideRepository.findByCategory(category).stream()
             .map(guide -> new CategoryGuideDto(guide.getId(), guide.getName(),
-                guide.getCoverImage() != null ? guide.getCoverImage().getImageUrl() : null))
+                guide.getCoverImage() != null ? new ImageDto(guide.getCoverImage().getId(), guide.getCoverImage().getImageUrl()) : null))
             .collect(Collectors.toList());
 
         return new CategoryGuidesResponseDto(category.getName(), guideDtos);

@@ -1,5 +1,6 @@
 package kr.moonwalk.moonwalk_api.dto.guide;
 
+import kr.moonwalk.moonwalk_api.dto.ImageDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -11,6 +12,6 @@ public class CategoryGuideDto {
 
     private String name;
 
-    private String coverImage;
+    private ImageDto coverImage;
 
 }
