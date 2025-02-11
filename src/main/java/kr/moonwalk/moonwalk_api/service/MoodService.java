@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Image;
 import kr.moonwalk.moonwalk_api.domain.Mood;
+import kr.moonwalk.moonwalk_api.dto.ImageDto;
 import kr.moonwalk.moonwalk_api.dto.mood.MoodDto;
 import kr.moonwalk.moonwalk_api.dto.mood.MoodListResponseDto;
 import kr.moonwalk.moonwalk_api.dto.mood.MoodResponseDto;
@@ -45,16 +46,16 @@ public class MoodService {
         Mood mood = moodRepository.findById(moodId)
             .orElseThrow(() -> new MoodNotFoundException("무드를 찾을 수 없습니다."));
 
-        MoodResponseDto.ImageDto coverImageDto = null;
+        ImageDto coverImageDto = null;
         if (mood.getCoverImage() != null) {
-            coverImageDto = new MoodResponseDto.ImageDto(
+            coverImageDto = new ImageDto(
                 mood.getCoverImage().getId(),
                 mood.getCoverImage().getImageUrl()
             );
         }
 
-        List<MoodResponseDto.ImageDto> detailImageDtos = mood.getDetailImages().stream()
-            .map(image -> new MoodResponseDto.ImageDto(image.getId(), image.getImageUrl()))
+        List<ImageDto> detailImageDtos = mood.getDetailImages().stream()
+            .map(image -> new ImageDto(image.getId(), image.getImageUrl()))
             .collect(Collectors.toList());
 
         return new MoodResponseDto(

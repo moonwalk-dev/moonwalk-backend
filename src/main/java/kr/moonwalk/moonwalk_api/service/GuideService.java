@@ -7,6 +7,7 @@ import kr.moonwalk.moonwalk_api.domain.Category;
 import kr.moonwalk.moonwalk_api.domain.Category.Type;
 import kr.moonwalk.moonwalk_api.domain.Guide;
 import kr.moonwalk.moonwalk_api.domain.Image;
+import kr.moonwalk.moonwalk_api.dto.ImageDto;
 import kr.moonwalk.moonwalk_api.dto.guide.CategoryGuideDto;
 import kr.moonwalk.moonwalk_api.dto.guide.CategoryGuidesResponseDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideResponseDto;
@@ -96,16 +97,16 @@ public class GuideService {
         Guide guide = guideRepository.findById(guideId)
             .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
 
-        GuideResponseDto.ImageDto coverImageDto = null;
+        ImageDto coverImageDto = null;
         if (guide.getCoverImage() != null) {
-            coverImageDto = new GuideResponseDto.ImageDto(
+            coverImageDto = new ImageDto(
                 guide.getCoverImage().getId(),
                 guide.getCoverImage().getImageUrl()
             );
         }
 
-        List<GuideResponseDto.ImageDto> detailImageDtos = guide.getDetailImages().stream()
-            .map(image -> new GuideResponseDto.ImageDto(image.getId(), image.getImageUrl()))
+        List<ImageDto> detailImageDtos = guide.getDetailImages().stream()
+            .map(image -> new ImageDto(image.getId(), image.getImageUrl()))
             .collect(Collectors.toList());
 
         return new GuideResponseDto(

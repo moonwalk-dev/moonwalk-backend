@@ -47,8 +47,6 @@ public class ModuleService {
             .collect(Collectors.groupingBy(
                 module -> module.getCategory().getName(),
                 Collectors.mapping(module -> {
-                    String topImageUrl = module.getTopImage() != null ? module.getTopImage().getImageUrl() : null;
-                    String isoImageUrl = module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null;
                     String size = module.getWidth() + "*" + module.getHeight();
 
                     return new ModuleResponseDto(
@@ -60,8 +58,8 @@ public class ModuleService {
                         module.getMaterials(),
                         module.getSerialNumber(),
                         module.getCapacity(),
-                        topImageUrl,
-                        isoImageUrl
+                        module.getTopImage(),
+                        module.getIsoImage()
                     );
                 }, Collectors.toList())
             ));
@@ -83,13 +81,10 @@ public class ModuleService {
         Module module = moduleRepository.findById(moduleId)
             .orElseThrow(() -> new ModuleNotFoundException("모듈을 찾을 수 없습니다."));
 
-        String topImageUrl =
-            module.getTopImage() != null ? module.getTopImage().getImageUrl() : null;
-        String isoImageUrl = module.getIsoImage() != null ? module.getIsoImage().getImageUrl() : null;
         String size = module.getWidth() + "*" + module.getHeight();
         return new ModuleResponseDto(module.getId(), module.getName(), module.getDescription(),
             size, module.getPrice(), module.getMaterials(), module.getSerialNumber(),
-            module.getCapacity(), topImageUrl, isoImageUrl);
+            module.getCapacity(), module.getTopImage(), module.getIsoImage());
     }
 
     @Transactional(readOnly = true)
