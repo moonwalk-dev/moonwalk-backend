@@ -41,21 +41,6 @@ public class CategoryService {
         return new CategorySaveResponseDto(savedCategory.getId(), savedCategory.getName());
     }
 
-    @Transactional
-    public CategorySaveResponseDto updateCategory(Long categoryId, CategoryUpdateDto updateDto) {
-        
-        Category category = categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
-
-        if (categoryRepository.existsByNameAndType(updateDto.getName(), category.getType())) {
-            throw new IllegalStateException("이미 존재하는 카테고리 명입니다.");
-        }
-
-        category.updateName(updateDto.getName());
-
-        return new CategorySaveResponseDto(category.getId(), category.getName());
-    }
-
     @Transactional(readOnly = true)
     public CategoryListResponseDto getOfficeGuideCategories() {
         List<CategoryResponseDto> categories = categoryRepository.findAll().stream()
@@ -80,4 +65,45 @@ public class CategoryService {
             .collect(Collectors.toList());
         return new CategoryResponseDto(category.getId(), category.getName(), subCategories);
     }
+
+    @Transactional
+    public CategorySaveResponseDto updateOfficeGuideCategory(Long categoryId,
+        CategoryUpdateDto updateDto) {
+
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
+
+        if (category.getType() != Type.TYPE_OFFICE) {
+            throw new IllegalStateException("오피스가이드 카테고리가 아닙니다.");
+        }
+
+        if (categoryRepository.existsByNameAndType(updateDto.getName(), category.getType())) {
+            throw new IllegalStateException("이미 존재하는 카테고리 명입니다.");
+        }
+
+        category.updateName(updateDto.getName());
+
+        return new CategorySaveResponseDto(category.getId(), category.getName());
+    }
+
+    @Transactional
+    public CategorySaveResponseDto updateModuleCategory(Long categoryId,
+        CategoryUpdateDto updateDto) {
+
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
+
+        if (category.getType() != Type.TYPE_MODULE) {
+            throw new IllegalStateException("모듈 카테고리가 아닙니다.");
+        }
+
+        if (categoryRepository.existsByNameAndType(updateDto.getName(), category.getType())) {
+            throw new IllegalStateException("이미 존재하는 카테고리 명입니다.");
+        }
+
+        category.updateName(updateDto.getName());
+
+        return new CategorySaveResponseDto(category.getId(), category.getName());
+    }
+
 }

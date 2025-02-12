@@ -11,15 +11,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    Optional<Category> findByName(String name);
-
-    boolean existsByName(String name);
 
     Optional<Category> findByNameAndType(String name, Type type);
 
     boolean existsByNameAndType(String name, Type type);
-
-    List<Category> findByNameInAndType(List<String> categoryNames, Type type);
 
     @Query("SELECT c.id FROM Category c WHERE c.name IN :names AND c.type = :type")
     List<Long> findIdsByNameInAndType(@Param("names") List<String> names, @Param("type") Category.Type type);
@@ -29,4 +24,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("SELECT c.id FROM Category c WHERE c.type = :type AND (c.id = :categoryId OR c.parentCategory.id = :categoryId)")
     List<Long> findAllSubCategoryIdsById(@Param("categoryId") Long categoryId, @Param("type") Type type);
+
 }

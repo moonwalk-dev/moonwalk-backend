@@ -64,13 +64,24 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "관리자 전용 카테고리 이름 수정")
+    @Operation(summary = "관리자 전용 오피스가이드 카테고리 이름 수정")
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{categoryId}")
-    public ResponseEntity<CategorySaveResponseDto> update(@PathVariable Long categoryId,
+    @PatchMapping("/office-guide/{categoryId}")
+    public ResponseEntity<CategorySaveResponseDto> updateOfficeGuideCategory(@PathVariable Long categoryId,
         @Valid @RequestBody CategoryUpdateDto updateDto) {
 
-        CategorySaveResponseDto response = categoryService.updateCategory(categoryId, updateDto);
+        CategorySaveResponseDto response = categoryService.updateOfficeGuideCategory(categoryId, updateDto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "관리자 전용 모듈 카테고리 이름 수정")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/module-select/{categoryId}")
+    public ResponseEntity<CategorySaveResponseDto> updateModuleCategory(@PathVariable Long categoryId,
+        @Valid @RequestBody CategoryUpdateDto updateDto) {
+
+        CategorySaveResponseDto response = categoryService.updateModuleCategory(categoryId, updateDto);
 
         return ResponseEntity.ok(response);
     }
