@@ -140,8 +140,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
         DataIntegrityViolationException ex) {
-        String message = "이 모듈은 다른 곳에서 사용중이어서 삭제할 수 없습니다.";
-        ErrorResponse errorResponse = new ErrorResponse(message, "MODULE_IN_USE");
+        String message = "이 모듈 또는 카테고리는 다른 곳에서 사용중이어서 삭제할 수 없습니다.";
+        ErrorResponse errorResponse = new ErrorResponse(message, "RESOURCE_IN_USE");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 }

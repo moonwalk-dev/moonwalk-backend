@@ -11,6 +11,7 @@ import kr.moonwalk.moonwalk_api.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,5 +85,25 @@ public class CategoryController {
         CategorySaveResponseDto response = categoryService.updateModuleCategory(categoryId, updateDto);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "관리자 전용 오피스가이드 카테고리 삭제")
+    @DeleteMapping("/office-guide/{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteOfficeGuideCategory(@PathVariable Long categoryId) {
+
+        categoryService.deleteOfficeGuideCategory(categoryId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "관리자 전용 모듈 카테고리 삭제")
+    @DeleteMapping("/module-select/{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteModuleCategory(@PathVariable Long categoryId) {
+
+        categoryService.deleteModuleCategory(categoryId);
+
+        return ResponseEntity.noContent().build();
     }
 }

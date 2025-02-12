@@ -106,4 +106,27 @@ public class CategoryService {
         return new CategorySaveResponseDto(category.getId(), category.getName());
     }
 
+    @Transactional
+    public void deleteOfficeGuideCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
+
+        if (category.getType() != Type.TYPE_OFFICE) {
+            throw new IllegalStateException("오피스가이드 카테고리가 아닙니다.");
+        }
+
+        categoryRepository.delete(category);
+    }
+
+    @Transactional
+    public void deleteModuleCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
+
+        if (category.getType() != Type.TYPE_MODULE) {
+            throw new IllegalStateException("모듈 카테고리가 아닙니다.");
+        }
+
+        categoryRepository.delete(category);
+    }
 }
