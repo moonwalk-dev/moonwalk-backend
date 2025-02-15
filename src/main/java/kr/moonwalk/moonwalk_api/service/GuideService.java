@@ -2,6 +2,7 @@ package kr.moonwalk.moonwalk_api.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Category;
 import kr.moonwalk.moonwalk_api.domain.Category.Type;
@@ -13,6 +14,7 @@ import kr.moonwalk.moonwalk_api.dto.guide.CategoryGuidesResponseDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideResponseDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveDto;
 import kr.moonwalk.moonwalk_api.dto.guide.GuideSaveResponseDto;
+import kr.moonwalk.moonwalk_api.dto.guide.GuideUpdateDto;
 import kr.moonwalk.moonwalk_api.exception.notfound.CategoryNotFoundException;
 import kr.moonwalk.moonwalk_api.exception.notfound.GuideNotFoundException;
 import kr.moonwalk.moonwalk_api.repository.CategoryRepository;
@@ -75,11 +77,10 @@ public class GuideService {
         guide.setCoverImage(coverImage);
 
         List<Image> detailImages = new ArrayList<>();
-        for (int i = 0; i < detailImageFiles.size(); i++) {
-            MultipartFile file = detailImageFiles.get(i);
+        for (MultipartFile file : detailImageFiles) {
+            String fileName = UUID.randomUUID().toString();
             String detailExtension = FileUtil.getFileExtension(file.getOriginalFilename());
-            String detailImagePath =
-                "guides/" + guide.getName() + "/detail" + (i + 1) + "." + detailExtension;
+            String detailImagePath = "guides/" + guide.getName() + "/detail_" + fileName + "." + detailExtension;
             Image detailImage = imageService.uploadAndSaveImage(file, detailImagePath);
             detailImages.add(detailImage);
         }
@@ -127,12 +128,15 @@ public class GuideService {
         guideRepository.delete(guide);
     }
 
-    public GuideSaveResponseDto updateGuide(Long guideId, GuideSaveDto guideDto, MultipartFile coverImageFile) {
+    @Transactional
+    public GuideResponseDto updateGuide(Long guideId, GuideUpdateDto updateDto,
+        MultipartFile coverImageFile, List<MultipartFile> detailImageFiles) {
 
         Guide guide = guideRepository.findById(guideId)
             .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
 
-        if (guideDto != null) {
+        if (updateDto != null && updateDto.getGuide() != null) {
+            GuideSaveDto guideDto = updateDto.getGuide();
             if (guideDto.getName() != null) guide.updateName(guideDto.getName());
             if (guideDto.getDescription() != null) guide.updateDescription(guideDto.getDescription());
             if (guideDto.getKeywords() != null) guide.updateKeywords(guideDto.getKeywords());
@@ -152,9 +156,19 @@ public class GuideService {
             guide.setCoverImage(updatedCoverImage);
         }
 
+        if (updateDto != null && updateDto.getDeleteImageIds() != null) {
+            for (Long imageId : updateDto.getDeleteImageIds()) {
+                deleteDetailImage(guideId, imageId);
+            }
+        }
+
+        if (detailImageFiles != null && !detailImageFiles.isEmpty()) {
+            addDetailImages(guideId, detailImageFiles);
+        }
+
         guideRepository.save(guide);
 
-        return new GuideSaveResponseDto(guide.getId(), guide.getName(), guide.getDescription(), guide.getKeywords());
+        return getInfo(guideId);
     }
 
     @Transactional
@@ -163,12 +177,10 @@ public class GuideService {
             .orElseThrow(() -> new GuideNotFoundException("오피스가이드를 찾을 수 없습니다."));
 
         List<Image> newDetailImages = new ArrayList<>();
-        int currentImageCount = guide.getDetailImages().size();
-
-        for (int i = 0; i < detailImageFiles.size(); i++) {
-            MultipartFile file = detailImageFiles.get(i);
+        for (MultipartFile file : detailImageFiles) {
+            String fileName = UUID.randomUUID().toString();
             String detailExtension = FileUtil.getFileExtension(file.getOriginalFilename());
-            String detailImagePath = "guides/" + guide.getName() + "/detail" + (currentImageCount + i + 1) + "." + detailExtension;
+            String detailImagePath = "guides/" + guide.getName() + "/detail_" + fileName + "." + detailExtension;
             Image newDetailImage = imageService.uploadAndSaveImage(file, detailImagePath);
             newDetailImages.add(newDetailImage);
         }
@@ -192,5 +204,4 @@ public class GuideService {
         guide.getDetailImages().remove(image);
         imageService.deleteImage(image);
     }
-
 }
