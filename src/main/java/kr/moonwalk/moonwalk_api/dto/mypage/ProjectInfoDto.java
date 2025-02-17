@@ -10,8 +10,8 @@ public class ProjectInfoDto {
     private String title;
     private String client;
     private String area;
-    private String estimatedTotalPrice;
-    private String placedTotalPrice;
+    private int estimatedTotalPrice;
+    private int placedTotalPrice;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
@@ -24,8 +24,8 @@ public class ProjectInfoDto {
         this.title = title;
         this.client = client;
         this.area = area;
-        this.estimatedTotalPrice = String.format("%,d", estimatedTotalPrice);
-        this.placedTotalPrice = String.format("%,d", placedTotalPrice);
+        this.estimatedTotalPrice = estimatedTotalPrice;
+        this.placedTotalPrice = placedTotalPrice;
         this.createdAt = createdAt;
         this.coverImageUrl = coverImageUrl;
     }

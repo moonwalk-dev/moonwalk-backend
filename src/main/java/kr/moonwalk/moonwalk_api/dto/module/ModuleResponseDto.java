@@ -1,6 +1,5 @@
 package kr.moonwalk.moonwalk_api.dto.module;
 
-import java.text.NumberFormat;
 import java.util.List;
 import kr.moonwalk.moonwalk_api.domain.Image;
 import kr.moonwalk.moonwalk_api.dto.ImageDto;
@@ -12,7 +11,7 @@ public class ModuleResponseDto {
     private String name;
     private String description;
     private String size;
-    private String price;
+    private int price;
     private List<String> materials;
     private String serialNumber;
     private int capacity;
@@ -26,16 +25,12 @@ public class ModuleResponseDto {
         this.name = name;
         this.description = description;
         this.size = size;
-        this.price = formatPrice(price);
+        this.price = price;
         this.materials = materials;
         this.serialNumber = serialNumber;
         this.capacity = capacity;
         this.topImage = topImage != null ? new ImageDto(topImage.getId(), topImage.getImageUrl()) : null;
         this.isoImage = isoImage != null ? new ImageDto(isoImage.getId(), isoImage.getImageUrl()) : null;
-    }
-
-    private String formatPrice(int price) {
-        return NumberFormat.getNumberInstance().format(price);
     }
 
 }
