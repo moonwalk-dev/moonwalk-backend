@@ -33,6 +33,10 @@ public class CategoryService {
         if (saveDto.getParentId() != null) {
             parentCategory = categoryRepository.findById(saveDto.getParentId())
                 .orElseThrow(() -> new CategoryNotFoundException("존재하지 않는 부모 카테고리입니다."));
+
+            if (parentCategory.getType() != type) {
+                throw new CategoryNotFoundException("존재하지 않는 부모 카테고리입니다.");
+            }
         }
 
         Category category = new Category(saveDto.getName(), parentCategory, type);
