@@ -1,5 +1,6 @@
 package kr.moonwalk.moonwalk_api.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.moonwalk.moonwalk_api.domain.Category;
@@ -48,6 +49,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryListResponseDto getOfficeGuideCategories() {
         List<CategoryResponseDto> categories = categoryRepository.findAll().stream()
+            .sorted(Comparator.comparing(Category::getId))
             .filter(category -> (category.getParentCategory() == null && category.getType() == Type.TYPE_OFFICE))
             .map(this::convertToDto)
             .collect(Collectors.toList());
@@ -57,6 +59,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryListResponseDto getModuleCategories() {
         List<CategoryResponseDto> categories = categoryRepository.findAll().stream()
+            .sorted(Comparator.comparing(Category::getId))
             .filter(category -> (category.getParentCategory() == null && category.getType() == Type.TYPE_MODULE))
             .map(this::convertToDto)
             .collect(Collectors.toList());
